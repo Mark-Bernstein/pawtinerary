@@ -48,6 +48,10 @@ Each service belongs to one dog, date, and group, with duration in minutes. Sche
 
 Send Data creates a DOCX file in the browser for a selected day, week, month, or lifetime. It also offers plain text copy and file sharing when the device supports the Web Share API. Reports use the currently selected language and include dogs, client names when available, services, amounts, and totals. Entry and access instructions are never included. No email is sent by the app.
 
+## Sharing the app
+
+Share `https://pawtinerary.vercel.app/` to show a branded link preview. Static Open Graph and large-image card metadata live in `index.html`; the banner is `public/social-preview.png`. The preview contains no browser-stored dog or client data.
+
 ## MVP limits and backend migration
 
 **Everything is stored locally in this browser. Clearing browser data removes all Pawtinerary records.** Data does not sync between devices, and there is no backup or login. Browser storage can also be disabled or exhausted.

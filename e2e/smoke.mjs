@@ -12,9 +12,23 @@ const base = process.env.PAWTINERARY_URL ?? 'http://127.0.0.1:5173';
 const screenshots = process.argv.includes('--screenshots');
 
 try {
+  const socialImage = await page.request.get(new URL('/social-preview.png', base).toString());
+  assert.equal(socialImage.status(), 200);
+  assert.equal(socialImage.headers()['content-type'], 'image/png');
+  const socialImageBytes = await socialImage.body();
+  assert.equal(socialImageBytes.readUInt32BE(16), 1733);
+  assert.equal(socialImageBytes.readUInt32BE(20), 907);
   const dogsUrl = new URL('/dogs', base).toString();
   const dogsResponse = await page.goto(dogsUrl);
   assert.equal(dogsResponse?.status(), 200, `Direct request to ${dogsUrl} did not return HTTP 200`);
+  assert.equal(
+    await page.locator('meta[property="og:image"]').getAttribute('content'),
+    'https://pawtinerary.vercel.app/social-preview.png',
+  );
+  assert.equal(
+    await page.locator('meta[name="twitter:card"]').getAttribute('content'),
+    'summary_large_image',
+  );
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
   const reloadResponse = await page.reload();
   assert.equal(reloadResponse?.status(), 200, `Refreshing ${dogsUrl} did not return HTTP 200`);
