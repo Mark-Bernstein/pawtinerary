@@ -18,6 +18,14 @@ npm test
 
 For a browser smoke test, start the development server in one terminal and run `npm run test:e2e` in another. It uses an installed Google Chrome browser.
 
+## Deploying with direct links
+
+The app uses clean paths such as `/dogs` and `/earnings`. On a direct visit or refresh, the hosting server must serve `index.html` with HTTP 200 for app paths while leaving the URL unchanged; React Router then renders the requested page. Vite development and preview servers already do this.
+
+For the Vercel deployment, `vercel.json` provides this rewrite. Set the build command to `npm run build` and the output directory to `dist`. Other static hosts need an equivalent fallback rewrite to `index.html`; a redirect to `/` would lose the current page.
+
+After deployment, open `/dogs` directly in a new tab and refresh it. Both requests should return HTTP 200 and leave `/dogs` in the address bar. The browser smoke test can check the deployed site with `PAWTINERARY_URL=https://your-site.example npm run test:e2e`.
+
 ## Technology and structure
 
 React, TypeScript, Vite, styled-components, React Router, date-fns, docx, and Vitest. The app has no backend or account system.

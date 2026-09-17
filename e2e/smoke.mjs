@@ -12,6 +12,15 @@ const base = process.env.PAWTINERARY_URL ?? 'http://127.0.0.1:5173';
 const screenshots = process.argv.includes('--screenshots');
 
 try {
+  const dogsUrl = new URL('/dogs', base).toString();
+  const dogsResponse = await page.goto(dogsUrl);
+  assert.equal(dogsResponse?.status(), 200, `Direct request to ${dogsUrl} did not return HTTP 200`);
+  await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
+  const reloadResponse = await page.reload();
+  assert.equal(reloadResponse?.status(), 200, `Refreshing ${dogsUrl} did not return HTTP 200`);
+  assert.equal(new URL(page.url()).pathname, '/dogs');
+  await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
+
   await page.goto(base);
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
   await page.getByRole('button', { name: 'Create Dog' }).first().click();
