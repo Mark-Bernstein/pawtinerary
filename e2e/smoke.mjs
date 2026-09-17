@@ -20,6 +20,24 @@ try {
   assert.equal(reloadResponse?.status(), 200, `Refreshing ${dogsUrl} did not return HTTP 200`);
   assert.equal(new URL(page.url()).pathname, '/dogs');
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(17, 27, 24)');
+  await page.getByRole('button', { name: 'Theme' }).click();
+  await page.getByRole('button', { name: /Light Mode/ }).click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(247, 246, 241)');
+  await page.reload();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+  await page.getByRole('button', { name: 'Theme' }).click();
+  await page.getByRole('button', { name: /Dog Mode/ }).click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dog');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(255, 243, 216)');
+  assert(await page.evaluate(() => getComputedStyle(document.body).backgroundImage.includes('dog-pattern.svg')));
+  await page.reload();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dog');
+  await page.getByRole('button', { name: 'Theme' }).click();
+  await page.getByRole('button', { name: /Dark Mode/ }).click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
 
   await page.goto(base);
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
@@ -39,6 +57,8 @@ try {
   await page.getByText('Enter a valid email address, such as pat@example.com.').waitFor();
   await page.getByLabel('Hourly rate (€) *').fill('20');
   await page.getByLabel('Email').fill('pat@example.com');
+  await page.getByText('Enter a numeric hourly rate, such as 20 or 20.50.').waitFor({ state: 'hidden' });
+  await page.getByText('Enter a valid email address, such as pat@example.com.').waitFor({ state: 'hidden' });
   await page.getByLabel('Entry / access instructions').fill('PRIVATE-CODE-123');
   await page.getByRole('button', { name: 'Add date' }).click();
   await page.getByRole('button', { name: 'Add date' }).click();
@@ -46,6 +66,7 @@ try {
   await page.getByText('Group 1 is already planned for this date.').waitFor();
   await page.getByLabel('Group').nth(1).selectOption('Group 3');
   await page.getByLabel('Duration').nth(1).selectOption('90');
+  await page.getByText('Group 1 is already planned for this date.').waitFor({ state: 'hidden' });
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
   await page.getByText('Earnings for Bailey').waitFor();
   assert.equal(await page.getByText('€50.00').count() > 0, true);
@@ -131,6 +152,9 @@ try {
 
   await page.getByRole('button', { name: 'Language' }).click();
   await page.getByRole('button', { name: 'Spanish' }).click();
+  await page.getByRole('button', { name: 'Tema' }).click();
+  await page.getByRole('button', { name: /Modo perro/ }).waitFor();
+  await page.getByRole('button', { name: 'Cerrar' }).click();
   await page.getByRole('link', { name: 'Agenda' }).first().click();
   await page.getByText('Los buenos paseos empiezan con un buen plan.').waitFor();
   await page.getByRole('button', { name: 'Crear perro' }).first().click();

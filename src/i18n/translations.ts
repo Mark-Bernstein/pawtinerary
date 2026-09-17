@@ -6,6 +6,14 @@ export const englishKeys = [
   "Add Service",
   "Send Data",
   "Language",
+  "Theme",
+  "Dark Mode (default)",
+  "Light Mode",
+  "Dog Mode",
+  "Choose how Pawtinerary looks on this device.",
+  "A calm, focused workspace for low light.",
+  "The original bright Pawtinerary look.",
+  "Sunshine, paw prints, and biscuit-colored cards.",
   "Calculator",
   "Open calculator",
   "Primary navigation",
@@ -222,6 +230,18 @@ const es: Record<TranslationKey, string> = {
   "Add Service": "Añadir servicio",
   "Send Data": "Enviar datos",
   Language: "Idioma",
+  Theme: "Tema",
+  "Dark Mode (default)": "Modo oscuro (predeterminado)",
+  "Light Mode": "Modo claro",
+  "Dog Mode": "Modo perro",
+  "Choose how Pawtinerary looks on this device.":
+    "Elige el aspecto de Pawtinerary en este dispositivo.",
+  "A calm, focused workspace for low light.":
+    "Un espacio tranquilo y cómodo con poca luz.",
+  "The original bright Pawtinerary look.":
+    "El aspecto claro original de Pawtinerary.",
+  "Sunshine, paw prints, and biscuit-colored cards.":
+    "Sol, huellas y tarjetas de color galleta.",
   Calculator: "Calculadora",
   "Open calculator": "Abrir calculadora",
   "Primary navigation": "Navegación principal",
@@ -473,6 +493,18 @@ const ca: Record<TranslationKey, string> = {
   "Add Service": "Afegir servei",
   "Send Data": "Enviar dades",
   Language: "Llengua",
+  Theme: "Tema",
+  "Dark Mode (default)": "Mode fosc (predeterminat)",
+  "Light Mode": "Mode clar",
+  "Dog Mode": "Mode gos",
+  "Choose how Pawtinerary looks on this device.":
+    "Tria l'aspecte de Pawtinerary en aquest dispositiu.",
+  "A calm, focused workspace for low light.":
+    "Un espai tranquil i còmode amb poca llum.",
+  "The original bright Pawtinerary look.":
+    "L'aspecte clar original de Pawtinerary.",
+  "Sunshine, paw prints, and biscuit-colored cards.":
+    "Sol, petjades i targetes de color galeta.",
   Calculator: "Calculadora",
   "Open calculator": "Obrir la calculadora",
   "Primary navigation": "Navegació principal",

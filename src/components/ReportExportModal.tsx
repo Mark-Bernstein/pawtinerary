@@ -118,7 +118,7 @@ export const ReportExportModal = ({ onClose }: { onClose: () => void }) => {
             />
           </Field>
         )}
-        <div style={{ padding: 16, borderRadius: 14, background: "#f4f7f1" }}>
+        <div style={{ padding: 16, borderRadius: 14, background: "var(--surface-soft)" }}>
           <strong>{reportPeriodLabel(period, report.anchor, language)}</strong>
           <div>
             <Muted>{t("Entry and access instructions are excluded.")}</Muted>

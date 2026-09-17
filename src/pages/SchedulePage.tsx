@@ -47,7 +47,7 @@ const groups: Group[] = ["Group 1", "Group 2", "Group 3"];
 const Switcher = styled.div`
   display: inline-flex;
   padding: 4px;
-  background: #e9eee6;
+  background: var(--surface-tint);
   border-radius: 13px;
   gap: 3px;
   button {
@@ -55,14 +55,14 @@ const Switcher = styled.div`
     border-radius: 10px;
     padding: 9px 18px;
     background: transparent;
-    color: #647467;
+    color: var(--muted);
     font-weight: 700;
     font-size: 13px;
   }
   button[aria-selected="true"] {
-    background: #fff;
-    color: #244b36;
-    box-shadow: 0 2px 8px #244b3618;
+    background: var(--surface);
+    color: var(--accent-text);
+    box-shadow: var(--card-shadow);
   }
 `;
 const NavBar = styled.div`
@@ -108,13 +108,13 @@ const Calendar = styled.div`
   }
 `;
 const CalendarDay = styled.button<{ $outside: boolean; $today: boolean }>`
-  background: ${({ $today }) => ($today ? "#e8f1e5" : "#fff")};
-  border: 1px solid ${({ $today }) => ($today ? "#a8c9a7" : "#e9ede7")};
+  background: ${({ $today }) => ($today ? "var(--accent-soft)" : "var(--surface)")};
+  border: 1px solid ${({ $today }) => ($today ? "var(--accent-border)" : "var(--border-soft)")};
   border-radius: 10px;
   min-height: 72px;
   padding: 7px 3px;
   text-align: left;
-  color: ${({ $outside }) => ($outside ? "#a9b4aa" : "#273c2e")};
+  color: ${({ $outside }) => ($outside ? "var(--muted-faint)" : "var(--text)")};
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -135,7 +135,7 @@ const CalendarDay = styled.button<{ $outside: boolean; $today: boolean }>`
     font-size: 10px;
   }
   &:hover {
-    border-color: #6b9a79;
+    border-color: var(--accent-border);
   }
 `;
 const Summary = styled(Card)`
@@ -144,10 +144,10 @@ const Summary = styled(Card)`
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  background: #264e39;
-  color: #fff;
+  background: var(--summary);
+  color: var(--summary-text);
   span {
-    color: #c2d7c7;
+    color: var(--summary-muted);
     display: block;
     font-size: 12px;
     margin-bottom: 4px;

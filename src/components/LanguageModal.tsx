@@ -6,9 +6,9 @@ import { Modal } from "./Modal";
 
 const Choice = styled.button<{ $selected: boolean }>`
   min-height: 56px;
-  border: 1px solid ${({ $selected }) => ($selected ? "#7aa88a" : "#e1e7df")};
-  background: ${({ $selected }) => ($selected ? "#ecf5ec" : "#fff")};
-  color: #244b36;
+  border: 1px solid ${({ $selected }) => ($selected ? "var(--accent-border)" : "var(--border)")};
+  background: ${({ $selected }) => ($selected ? "var(--accent-soft)" : "var(--surface)")};
+  color: var(--text);
   border-radius: 13px;
   padding: 12px 15px;
   display: flex;

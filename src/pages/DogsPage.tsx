@@ -23,7 +23,7 @@ import { EmptyState } from "../components/EmptyState";
 const DogLink = styled(Link)`
   display: block;
   &:hover > div {
-    border-color: #aacbb1;
+    border-color: var(--accent-border);
     transform: translateY(-2px);
   }
 `;
@@ -39,8 +39,8 @@ const Avatar = styled.div`
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: #e4efe3;
-  color: #336b49;
+  background: var(--accent-soft);
+  color: var(--accent-text);
   font:
     700 23px Outfit,
     sans-serif;
@@ -53,7 +53,7 @@ const SearchWrap = styled.div`
     position: absolute;
     left: 13px;
     top: 13px;
-    color: #859488;
+    color: var(--muted);
   }
   input {
     padding-left: 41px;
@@ -124,7 +124,7 @@ export const DogsPage = () => {
                   </Row>
                   <div
                     style={{
-                      borderTop: "1px solid #edf0eb",
+                      borderTop: "1px solid var(--border-soft)",
                       marginTop: 20,
                       paddingTop: 15,
                       display: "flex",

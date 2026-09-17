@@ -14,6 +14,7 @@ import {
   Dog,
   FileUp,
   Languages,
+  Palette,
   PawPrint,
   Plus,
 } from "lucide-react";
@@ -30,14 +31,19 @@ import { DogFormPage } from "./pages/DogFormPage";
 import { EarningsPage } from "./pages/EarningsPage";
 import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
 import { LanguageModal } from "./components/LanguageModal";
+import { ThemeModal } from "./components/ThemeModal";
+import { ThemeProvider } from "./theme/ThemeContext";
 
 const Header = styled.header`
-  background: #fff;
-  border-bottom: 1px solid #e7ece5;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-soft);
   position: sticky;
   top: 0;
   z-index: 30;
-  box-shadow: 0 3px 18px #1a38280a;
+  box-shadow: var(--header-shadow);
+  :root[data-theme="dog"] & {
+    border-top: 4px solid var(--gold);
+  }
 `;
 const HeaderInner = styled.div`
   max-width: 1180px;
@@ -57,15 +63,15 @@ const Brand = styled(NavLink)`
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: #254b38;
+  color: var(--accent-text);
   font:
     800 23px Outfit,
     sans-serif;
   letter-spacing: -0.06em;
   white-space: nowrap;
   svg {
-    fill: #e6ad57;
-    stroke: #254b38;
+    fill: var(--gold);
+    stroke: var(--accent-text);
   }
   @media (max-width: 360px) {
     font-size: 20px;
@@ -83,18 +89,18 @@ const Nav = styled.nav`
   a {
     padding: 11px 15px;
     border-radius: 11px;
-    color: #748277;
+    color: var(--muted);
     font-size: 13px;
     font-weight: 800;
   }
   a.active {
-    background: #eaf2e8;
-    color: #2c6041;
+    background: var(--accent-soft);
+    color: var(--accent-text);
   }
 `;
 const HeaderActions = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
   gap: 5px;
   width: 100%;
@@ -118,9 +124,9 @@ const CalcButton = styled.button`
   height: 42px;
   width: 42px;
   border-radius: 12px;
-  border: 1px solid #dfe7de;
-  color: #2a5139;
-  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--accent-text);
+  background: var(--surface);
   display: grid;
   place-items: center;
   flex: none;
@@ -137,10 +143,10 @@ const MobileNav = styled.nav`
   right: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  background: #fff;
-  border-top: 1px solid #e2e9e1;
+  background: var(--surface);
+  border-top: 1px solid var(--border-soft);
   padding: 7px 10px calc(7px + env(safe-area-inset-bottom));
-  box-shadow: 0 -8px 22px #16362410;
+  box-shadow: var(--nav-shadow);
   @media (min-width: 1120px) {
     display: none;
   }
@@ -150,14 +156,14 @@ const MobileNav = styled.nav`
     justify-items: center;
     align-content: center;
     gap: 3px;
-    color: #7d8a80;
+    color: var(--muted);
     font-size: 10px;
     font-weight: 800;
     border-radius: 12px;
   }
   a.active {
-    color: #26583b;
-    background: #ecf4eb;
+    color: var(--accent-text);
+    background: var(--accent-soft);
   }
 `;
 const Toast = styled.div`
@@ -166,13 +172,13 @@ const Toast = styled.div`
   bottom: calc(86px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  background: #254b38;
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
   border-radius: 13px;
   padding: 12px 17px;
   font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 8px 28px #16362440;
+  box-shadow: var(--toast-shadow);
   min-width: max-content;
   max-width: calc(100vw - 25px);
   text-align: center;
@@ -193,6 +199,7 @@ const Shell = () => {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
   const [serviceOptions, setServiceOptions] = useState<{
     dogId?: string;
     date?: string;
@@ -235,6 +242,9 @@ const Shell = () => {
             <Button $small onClick={() => setReportOpen(true)}>
               <FileUp size={15} /> {t("Send Data")}
             </Button>
+            <Button $small onClick={() => setThemeOpen(true)}>
+              <Palette size={15} /> {t("Theme")}
+            </Button>
           </HeaderActions>
         </HeaderInner>
       </Header>
@@ -272,6 +282,7 @@ const Shell = () => {
         <Calculator onClose={() => setCalculatorOpen(false)} />
       )}
       {languageOpen && <LanguageModal onClose={() => setLanguageOpen(false)} />}
+      {themeOpen && <ThemeModal onClose={() => setThemeOpen(false)} />}
       {reportOpen && <ReportExportModal onClose={() => setReportOpen(false)} />}
       {serviceOptions && (
         <ServiceFormModal
@@ -287,10 +298,12 @@ const Shell = () => {
 export const App = () => (
   <BrowserRouter>
     <LanguageProvider>
-      <AppProvider>
-        <GlobalStyle />
-        <Shell />
-      </AppProvider>
+      <ThemeProvider>
+        <AppProvider>
+          <GlobalStyle />
+          <Shell />
+        </AppProvider>
+      </ThemeProvider>
     </LanguageProvider>
   </BrowserRouter>
 );

@@ -5,7 +5,7 @@ import { useLanguage } from "../i18n/LanguageContext";
 
 type Operator = "+" | "−" | "×" | "÷";
 const Display = styled.div`
-  background: #f3f6f1;
+  background: var(--surface-soft);
   border-radius: 16px;
   padding: 18px;
   text-align: right;
@@ -28,8 +28,8 @@ const Key = styled.button<{ $accent?: boolean; $wide?: boolean }>`
   min-height: 58px;
   border: 0;
   border-radius: 14px;
-  background: ${({ $accent }) => ($accent ? "#27543c" : "#edf2eb")};
-  color: ${({ $accent }) => ($accent ? "#fff" : "#254636")};
+  background: ${({ $accent }) => ($accent ? "var(--accent)" : "var(--surface-tint)")};
+  color: ${({ $accent }) => ($accent ? "var(--on-accent)" : "var(--accent-text)")};
   font:
     700 19px Outfit,
     sans-serif;

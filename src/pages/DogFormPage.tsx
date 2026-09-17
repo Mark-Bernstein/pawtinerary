@@ -42,7 +42,7 @@ const PlannerRow = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 14px;
-  border: 1px solid #e6ece4;
+  border: 1px solid var(--border-soft);
   border-radius: 15px;
   @media (min-width: 650px) {
     grid-template-columns: 1.4fr 1fr 1fr auto;

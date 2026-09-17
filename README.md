@@ -34,12 +34,13 @@ React, TypeScript, Vite, styled-components, React Router, date-fns, docx, and Vi
 - `src/components`: service controls, dialogs, calculator, report export, and reusable cards.
 - `src/context/AppContext.tsx`: domain actions and app state.
 - `src/i18n`: English, Spanish, and Catalan wording, locale formatting, and language preference.
+- `src/theme`: Dark, Light, and Dog Mode selection and persistence.
 - `src/storage/data.ts`: versioned browser storage parsing and writing.
 - `src/utils`: date, currency, earnings, and report logic.
 
 ## Data and calculations
 
-The browser stores `{ version: 1, dogs, services }` under `pawtinerary.data.v1` in `localStorage`. Changes persist automatically after add, edit, completion, cancellation, or deletion. The selected language is stored separately under `pawtinerary.language.v1` and defaults to English. The schedule view selection uses `sessionStorage`.
+The browser stores `{ version: 1, dogs, services }` under `pawtinerary.data.v1` in `localStorage`. Changes persist automatically after add, edit, completion, cancellation, or deletion. The selected language is stored separately under `pawtinerary.language.v1` and defaults to English. The selected theme is stored under `pawtinerary.theme.v1` and defaults to Dark Mode. Light Mode keeps the original palette; Dog Mode adds a warm palette, paw and bone pattern, and playful card styling. The schedule view selection uses `sessionStorage`.
 
 Each service belongs to one dog, date, and group, with duration in minutes. Scheduled services count toward **potential** earnings. Completed services count toward **earned** earnings. Cancelled services count toward neither. On completion, the dog's hourly rate is copied to the service, keeping historical earned amounts stable when the dog's rate changes. Scheduled services use the current rate. Deleting a dog also deletes every associated service.
 

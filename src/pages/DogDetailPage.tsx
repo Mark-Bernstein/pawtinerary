@@ -42,7 +42,7 @@ const InfoCard = styled(Card)`
   gap: 15px;
 `;
 const Label = styled.div`
-  color: #7a897d;
+  color: var(--muted);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -52,7 +52,7 @@ const Label = styled.div`
 const AddressButton = styled.button`
   border: 0;
   background: transparent;
-  color: #2b6340;
+  color: var(--accent-text);
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -63,7 +63,7 @@ const AddressButton = styled.button`
   text-underline-offset: 3px;
 `;
 const Divider = styled.div`
-  border-top: 1px solid #edf0eb;
+  border-top: 1px solid var(--border-soft);
 `;
 const ServiceSection = styled.section`
   display: grid;
@@ -302,7 +302,7 @@ export const DogDetailPage = ({
               style={{
                 margin: 0,
                 fontWeight: 800,
-                color: "#9c382b",
+                color: "var(--danger)",
                 lineHeight: 1.6,
               }}
             >

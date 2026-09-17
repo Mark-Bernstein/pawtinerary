@@ -9,12 +9,12 @@ const Wrap = styled(Card)`
   display: grid;
   justify-items: center;
   gap: 10px;
-  color: #708174;
+  color: var(--muted);
   svg {
-    color: #6a9677;
+    color: var(--accent-text);
   }
   strong {
-    color: #284935;
+    color: var(--text);
     font:
       600 17px Outfit,
       sans-serif;

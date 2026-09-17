@@ -9,7 +9,7 @@ const Backdrop = styled.div`
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(18, 40, 27, 0.48);
+  background: var(--overlay);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -20,13 +20,13 @@ const Backdrop = styled.div`
   }
 `;
 const Panel = styled.div`
-  background: #fff;
+  background: var(--surface);
   border-radius: 24px 24px 0 0;
   width: 100%;
   max-width: 580px;
   max-height: min(90dvh, 850px);
   overflow: auto;
-  box-shadow: 0 24px 80px rgba(16, 37, 24, 0.2);
+  box-shadow: var(--modal-shadow);
   padding: 24px 20px calc(26px + env(safe-area-inset-bottom));
   @media (min-width: 650px) {
     border-radius: 24px;

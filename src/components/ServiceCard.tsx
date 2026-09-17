@@ -28,8 +28,8 @@ const Avatar = styled.div`
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: #e8f0e8;
-  color: #336d4b;
+  background: var(--accent-soft);
+  color: var(--accent-text);
   font:
     700 18px Outfit,
     sans-serif;
