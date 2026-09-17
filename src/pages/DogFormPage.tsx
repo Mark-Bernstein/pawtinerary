@@ -5,6 +5,7 @@ import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
 import type { DogInput, Group } from "../types";
 import { todayKey } from "../utils/dates";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   validateDogForm,
   type PlannedService,
@@ -68,6 +69,7 @@ const newPlan = (): PlannedService => ({
 export const DogFormPage = () => {
   const { id } = useParams();
   const { data, addDog, updateDog } = useApp();
+  const { t, language, group: groupLabel, durationOption } = useLanguage();
   const navigate = useNavigate();
   const dog = data.dogs.find((item) => item.id === id);
   const [input, setInput] = useState<DogInput>(() =>
@@ -84,7 +86,7 @@ export const DogFormPage = () => {
         }
       : emptyInput,
   );
-  const [rateText, setRateText] = useState(dog?.hourlyRate.toString() ?? "");
+  const [rateText, setRateText] = useState(dog ? (language === "en" ? String(dog.hourlyRate) : String(dog.hourlyRate).replace(".", ",")) : "");
   const [planned, setPlanned] = useState<PlannedService[]>([]);
   const [attempted, setAttempted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -94,6 +96,7 @@ export const DogFormPage = () => {
     planned,
     data.services,
     dog?.id,
+    language,
   );
   const errors: Record<string, string> = attempted ? validation.errors : {};
   const setField = <K extends keyof DogInput>(key: K, value: DogInput[K]) =>
@@ -139,9 +142,9 @@ export const DogFormPage = () => {
   if (id && !dog)
     return (
       <Page>
-        <Title>Dog not found</Title>
+        <Title>{t("Dog not found")}</Title>
         <Button as={Link} to="/dogs">
-          Back to Dogs
+          {t("Back to Dogs")}
         </Button>
       </Page>
     );
@@ -149,78 +152,104 @@ export const DogFormPage = () => {
     <Page>
       <TopRow>
         <div>
-          <Eyebrow>{dog ? "DOG PROFILE" : "NEW COMPANION"}</Eyebrow>
-          <Title>{dog ? "Edit dog" : "Create dog"}</Title>
-          <Subtitle>Keep the essentials together for every visit.</Subtitle>
+          <Eyebrow>{t(dog ? "DOG PROFILE" : "NEW COMPANION")}</Eyebrow>
+          <Title>{t(dog ? "Edit dog" : "Create dog")}</Title>
+          <Subtitle>
+            {t("Keep the essentials together for every visit.")}
+          </Subtitle>
         </div>
         <Button as={Link} to={dog ? `/dogs/${dog.id}` : "/dogs"}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> {t("Back")}
         </Button>
       </TopRow>
       <form ref={formRef} onSubmit={submit} noValidate>
         <Stack $gap={20}>
           {Object.keys(errors).length > 0 && (
             <ErrorSummary role="alert">
-              Please fix {Object.keys(errors).length === 1 ? "the highlighted field" : "the highlighted fields"} before {dog ? "saving changes" : "creating this dog"}.
+              {t(
+                dog
+                  ? Object.keys(errors).length === 1
+                    ? "Please fix the highlighted field before saving changes."
+                    : "Please fix the highlighted fields before saving changes."
+                  : Object.keys(errors).length === 1
+                    ? "Please fix the highlighted field before creating this dog."
+                    : "Please fix the highlighted fields before creating this dog.",
+              )}
             </ErrorSummary>
           )}
           <FormCard>
             <Stack>
-              <SectionTitle>Dog details</SectionTitle>
+              <SectionTitle>{t("Dog details")}</SectionTitle>
               <Grid>
                 <Field>
-                  Dog name *
+                  {t("Dog name *")}
                   <Input
                     required
                     value={input.name}
                     onChange={(event) => setField("name", event.target.value)}
-                    placeholder="e.g. Bailey"
-                    aria-label="Dog name *"
+                    placeholder={t("e.g. Bailey")}
+                    aria-label={t("Dog name *")}
                     aria-invalid={Boolean(errors.name)}
-                    aria-describedby={errors.name ? "dog-name-error" : undefined}
+                    aria-describedby={
+                      errors.name ? "dog-name-error" : undefined
+                    }
                     data-validation-key="name"
                   />
-                  {errors.name && <FieldError id="dog-name-error">{errors.name}</FieldError>}
+                  {errors.name && (
+                    <FieldError id="dog-name-error">{errors.name}</FieldError>
+                  )}
                 </Field>
                 <Field>
-                  Hourly rate (€) *
+                  {t("Hourly rate (€) *")}
                   <Input
                     required
                     type="text"
                     inputMode="decimal"
                     value={rateText}
                     onChange={(event) => setRateText(event.target.value)}
-                    placeholder="20.00"
-                    aria-label="Hourly rate (€) *"
+                    placeholder={language === "en" ? "20.00" : "20,00"}
+                    aria-label={t("Hourly rate (€) *")}
                     aria-invalid={Boolean(errors.hourlyRate)}
-                    aria-describedby={errors.hourlyRate ? "dog-rate-error" : undefined}
+                    aria-describedby={
+                      errors.hourlyRate ? "dog-rate-error" : undefined
+                    }
                     data-validation-key="hourlyRate"
                   />
-                  {errors.hourlyRate && <FieldError id="dog-rate-error">{errors.hourlyRate}</FieldError>}
+                  {errors.hourlyRate && (
+                    <FieldError id="dog-rate-error">
+                      {errors.hourlyRate}
+                    </FieldError>
+                  )}
                 </Field>
               </Grid>
               <Field>
-                Address *
+                {t("Address *")}
                 <Input
                   required
                   value={input.address}
                   onChange={(event) => setField("address", event.target.value)}
-                  placeholder="Street, city, postcode"
-                  aria-label="Address *"
+                  placeholder={t("Street, city, postcode")}
+                  aria-label={t("Address *")}
                   aria-invalid={Boolean(errors.address)}
-                  aria-describedby={errors.address ? "dog-address-error" : undefined}
+                  aria-describedby={
+                    errors.address ? "dog-address-error" : undefined
+                  }
                   data-validation-key="address"
                 />
-                {errors.address && <FieldError id="dog-address-error">{errors.address}</FieldError>}
+                {errors.address && (
+                  <FieldError id="dog-address-error">
+                    {errors.address}
+                  </FieldError>
+                )}
               </Field>
             </Stack>
           </FormCard>
           <FormCard>
             <Stack>
-              <SectionTitle>Client contact</SectionTitle>
+              <SectionTitle>{t("Client contact")}</SectionTitle>
               <Grid>
                 <Field>
-                  Owner / client name
+                  {t("Owner / client name")}
                   <Input
                     value={input.ownerName}
                     onChange={(event) =>
@@ -229,7 +258,7 @@ export const DogFormPage = () => {
                   />
                 </Field>
                 <Field>
-                  Phone
+                  {t("Phone")}
                   <Input
                     type="tel"
                     value={input.ownerPhone}
@@ -239,47 +268,54 @@ export const DogFormPage = () => {
                   />
                 </Field>
                 <Field>
-                  Email
+                  {t("Email")}
                   <Input
                     type="email"
                     value={input.ownerEmail}
-                    aria-label="Email"
+                    aria-label={t("Email")}
                     onChange={(event) =>
                       setField("ownerEmail", event.target.value)
                     }
                     aria-invalid={Boolean(errors.ownerEmail)}
-                    aria-describedby={errors.ownerEmail ? "dog-email-error" : undefined}
+                    aria-describedby={
+                      errors.ownerEmail ? "dog-email-error" : undefined
+                    }
                     data-validation-key="ownerEmail"
                   />
-                  {errors.ownerEmail && <FieldError id="dog-email-error">{errors.ownerEmail}</FieldError>}
+                  {errors.ownerEmail && (
+                    <FieldError id="dog-email-error">
+                      {errors.ownerEmail}
+                    </FieldError>
+                  )}
                 </Field>
               </Grid>
             </Stack>
           </FormCard>
           <FormCard>
             <Stack>
-              <SectionTitle>Visit notes</SectionTitle>
+              <SectionTitle>{t("Visit information")}</SectionTitle>
               <Field>
-                Miscellaneous notes
+                {t("Miscellaneous notes")}
                 <Textarea
                   value={input.notes}
                   onChange={(event) => setField("notes", event.target.value)}
-                  placeholder="Personality, preferences, reminders…"
+                  placeholder={t("Personality, preferences, reminders…")}
                 />
               </Field>
               <Field>
-                Entry / access instructions
+                {t("Entry / access instructions")}
                 <Textarea
                   value={input.accessInstructions}
                   onChange={(event) =>
                     setField("accessInstructions", event.target.value)
                   }
-                  placeholder="Keys, gate code, entry details…"
+                  placeholder={t("Keys, gate code, entry details…")}
                 />
               </Field>
               <Muted>
-                Access instructions stay on this device and are excluded from
-                reports.
+                {t(
+                  "Access instructions stay on this device and are excluded from reports.",
+                )}
               </Muted>
             </Stack>
           </FormCard>
@@ -287,9 +323,9 @@ export const DogFormPage = () => {
             <Stack>
               <Row style={{ justifyContent: "space-between" }}>
                 <div>
-                  <SectionTitle>Plan services</SectionTitle>
+                  <SectionTitle>{t("Plan services")}</SectionTitle>
                   <Muted>
-                    Add individual dates now, or use Add Service later.
+                    {t("Add individual dates now, or use Add Service later.")}
                   </Muted>
                 </div>
                 <Button
@@ -298,13 +334,13 @@ export const DogFormPage = () => {
                     setPlanned((current) => [...current, newPlan()])
                   }
                 >
-                  <Plus size={15} /> Add date
+                  <Plus size={15} /> {t("Add date")}
                 </Button>
               </Row>
               {planned.map((item) => (
                 <PlannerRow key={item.key}>
                   <Field>
-                    Date
+                    {t("Date")}
                     <Input
                       type="date"
                       value={item.date}
@@ -312,47 +348,69 @@ export const DogFormPage = () => {
                         setPlan(item.key, { date: event.target.value })
                       }
                       required
-                      aria-label="Date"
+                      aria-label={t("Date")}
                       aria-invalid={Boolean(errors[`date:${item.key}`])}
-                      aria-describedby={errors[`date:${item.key}`] ? `plan-date-error-${item.key}` : undefined}
+                      aria-describedby={
+                        errors[`date:${item.key}`]
+                          ? `plan-date-error-${item.key}`
+                          : undefined
+                      }
                       data-validation-key={`date:${item.key}`}
                     />
-                    {errors[`date:${item.key}`] && <FieldError id={`plan-date-error-${item.key}`}>{errors[`date:${item.key}`]}</FieldError>}
+                    {errors[`date:${item.key}`] && (
+                      <FieldError id={`plan-date-error-${item.key}`}>
+                        {errors[`date:${item.key}`]}
+                      </FieldError>
+                    )}
                   </Field>
                   <Field>
-                    Group
+                    {t("Group")}
                     <Select
                       value={item.group}
-                      aria-label="Group"
+                      aria-label={t("Group")}
                       onChange={(event) =>
                         setPlan(item.key, {
                           group: event.target.value as Group,
                         })
                       }
                       aria-invalid={Boolean(errors[`group:${item.key}`])}
-                      aria-describedby={errors[`group:${item.key}`] ? `plan-group-error-${item.key}` : undefined}
+                      aria-describedby={
+                        errors[`group:${item.key}`]
+                          ? `plan-group-error-${item.key}`
+                          : undefined
+                      }
                       data-validation-key={`group:${item.key}`}
                     >
                       {(["Group 1", "Group 2", "Group 3"] as Group[]).map(
                         (group) => (
-                          <option key={group}>{group}</option>
+                          <option key={group} value={group}>
+                            {groupLabel(group)}
+                          </option>
                         ),
                       )}
                     </Select>
-                    {errors[`group:${item.key}`] && <FieldError id={`plan-group-error-${item.key}`}>{errors[`group:${item.key}`]}</FieldError>}
+                    {errors[`group:${item.key}`] && (
+                      <FieldError id={`plan-group-error-${item.key}`}>
+                        {errors[`group:${item.key}`]}
+                      </FieldError>
+                    )}
                   </Field>
                   <Field>
-                    Duration
+                    {t("Duration")}
                     <Select
                       value={item.durationMinutes}
-                      aria-label="Duration"
+                      aria-label={t("Duration")}
                       onChange={(event) =>
                         setPlan(item.key, {
                           durationMinutes: Number(event.target.value),
                         })
                       }
                       aria-invalid={Boolean(errors[`duration:${item.key}`])}
-                      aria-describedby={errors[`duration:${item.key}`] ? `plan-duration-error-${item.key}` : undefined}
+                      aria-describedby={
+                        errors[`duration:${item.key}`]
+                          ? `plan-duration-error-${item.key}`
+                          : undefined
+                      }
                       data-validation-key={`duration:${item.key}`}
                     >
                       {Array.from(
@@ -360,11 +418,15 @@ export const DogFormPage = () => {
                         (_, index) => (index + 1) * 15,
                       ).map((minutes) => (
                         <option key={minutes} value={minutes}>
-                          {minutes / 60} {minutes === 60 ? "hour" : "hours"}
+                          {durationOption(minutes)}
                         </option>
                       ))}
                     </Select>
-                    {errors[`duration:${item.key}`] && <FieldError id={`plan-duration-error-${item.key}`}>{errors[`duration:${item.key}`]}</FieldError>}
+                    {errors[`duration:${item.key}`] && (
+                      <FieldError id={`plan-duration-error-${item.key}`}>
+                        {errors[`duration:${item.key}`]}
+                      </FieldError>
+                    )}
                   </Field>
                   <Button
                     type="button"
@@ -374,9 +436,9 @@ export const DogFormPage = () => {
                         current.filter((row) => row.key !== item.key),
                       )
                     }
-                    aria-label="Remove planned service"
+                    aria-label={t("Remove planned service")}
                   >
-                    <Trash2 size={16} /> Remove
+                    <Trash2 size={16} /> {t("Remove")}
                   </Button>
                 </PlannerRow>
               ))}
@@ -387,10 +449,10 @@ export const DogFormPage = () => {
               type="button"
               onClick={() => navigate(dog ? `/dogs/${dog.id}` : "/dogs")}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button type="submit" $variant="primary">
-              {dog ? "Save changes" : "Create dog"}
+              {t(dog ? "Save changes" : "Create dog")}
             </Button>
           </Row>
         </Stack>

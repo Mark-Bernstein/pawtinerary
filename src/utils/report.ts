@@ -2,7 +2,6 @@ import { format } from "date-fns";
 import type { Dog, Period, Service } from "../types";
 import {
   dateKey,
-  formatShortDay,
   fromKey,
   inPeriod,
   monthEnd,
@@ -10,13 +9,24 @@ import {
   weekEnd,
   weekStart,
 } from "./dates";
-import { currency, durationLabel, getTotals, serviceAmount } from "./earnings";
+import { getTotals, serviceAmount } from "./earnings";
+import {
+  formatCurrency,
+  formatDuration,
+  formatGroup,
+  formatLocalizedDate,
+  formatLocalizedShortDay,
+  formatStatus,
+  translate,
+  type Language,
+} from "../i18n/LanguageContext";
 
 export interface ReportData {
   period: Period;
   anchor: Date;
   dogs: Dog[];
   services: Service[];
+  language: Language;
 }
 export const reportServices = ({
   period,
@@ -35,32 +45,52 @@ export const reportServices = ({
       (a, b) => a.date.localeCompare(b.date) || a.group.localeCompare(b.group),
     );
 };
-export const reportPeriodLabel = (period: Period, anchor: Date) => {
-  if (period === "lifetime") return "Lifetime · all stored history";
-  if (period === "day") return format(anchor, "d MMMM yyyy");
+export const reportPeriodLabel = (
+  period: Period,
+  anchor: Date,
+  language: Language = "en",
+) => {
+  if (period === "lifetime")
+    return translate(language, "Lifetime · all stored history");
+  if (period === "day")
+    return formatLocalizedDate(anchor, "d MMMM yyyy", language);
   if (period === "week")
-    return `${format(weekStart(anchor), "d MMM yyyy")} – ${format(weekEnd(anchor), "d MMM yyyy")}`;
-  return `${format(monthStart(anchor), "d MMM yyyy")} – ${format(monthEnd(anchor), "d MMM yyyy")}`;
+    return `${formatLocalizedDate(weekStart(anchor), "d MMM yyyy", language)} – ${formatLocalizedDate(weekEnd(anchor), "d MMM yyyy", language)}`;
+  return `${formatLocalizedDate(monthStart(anchor), "d MMM yyyy", language)} – ${formatLocalizedDate(monthEnd(anchor), "d MMM yyyy", language)}`;
 };
-export const reportFileName = (period: Period, anchor: Date) => {
-  if (period === "lifetime") return "Pawtinerary-Lifetime-Report.docx";
-  if (period === "day") return `Pawtinerary-Day-${dateKey(anchor)}.docx`;
+export const reportFileName = (period: Period, anchor: Date, language: Language = "en") => {
+  const names = {
+    en: { day: "Day", week: "Week", month: "Month", lifetime: "Lifetime-Report" },
+    es: { day: "Dia", week: "Semana", month: "Mes", lifetime: "Informe-Historico" },
+    ca: { day: "Dia", week: "Setmana", month: "Mes", lifetime: "Informe-Historic" },
+  }[language];
+  if (period === "lifetime") return `Pawtinerary-${names.lifetime}.docx`;
+  if (period === "day") return `Pawtinerary-${names.day}-${dateKey(anchor)}.docx`;
   if (period === "week")
-    return `Pawtinerary-Week-${dateKey(weekStart(anchor))}.docx`;
-  return `Pawtinerary-Month-${format(anchor, "yyyy-MM")}.docx`;
+    return `Pawtinerary-${names.week}-${dateKey(weekStart(anchor))}.docx`;
+  return `Pawtinerary-${names.month}-${format(anchor, "yyyy-MM")}.docx`;
 };
 export const reportText = (report: ReportData) => {
+  const t = (
+    key: Parameters<typeof translate>[1],
+    params?: Record<string, string | number>,
+  ) => translate(report.language, key, params);
+  const money = (amount: number) => formatCurrency(amount, report.language);
   const items = reportServices(report);
   const dogMap = new Map(report.dogs.map((dog) => [dog.id, dog]));
   const totals = getTotals(items, report.dogs);
   const lines = [
     "PAWTINERARY",
-    `Report: ${reportPeriodLabel(report.period, report.anchor)}`,
-    `Generated: ${format(new Date(), "d MMM yyyy")}`,
+    t("Report: {period}", {
+      period: reportPeriodLabel(report.period, report.anchor, report.language),
+    }),
+    t("Generated: {date}", {
+      date: formatLocalizedDate(new Date(), "d MMM yyyy", report.language),
+    }),
     "",
-    "SERVICES",
+    t("SERVICES"),
   ];
-  if (!items.length) lines.push("No services in this period.");
+  if (!items.length) lines.push(t("No services in this period."));
   items.forEach((item) => {
     const dog = dogMap.get(item.dogId)!;
     const rate =
@@ -68,14 +98,16 @@ export const reportText = (report: ReportData) => {
         ? (item.completedHourlyRate ?? dog.hourlyRate)
         : dog.hourlyRate;
     lines.push(
-      `${formatShortDay(item.date)} | ${item.group} | ${dog.name}${dog.ownerName ? ` (${dog.ownerName})` : ""} | ${durationLabel(item.durationMinutes)} | ${item.status} | ${currency(rate)}/hr | ${item.status === "cancelled" ? currency(0) : currency(serviceAmount(item, dog))}`,
+      `${formatLocalizedShortDay(item.date, report.language)} | ${formatGroup(item.group, report.language)} | ${dog.name}${dog.ownerName ? ` (${dog.ownerName})` : ""} | ${formatDuration(item.durationMinutes, report.language)} | ${formatStatus(item.status, report.language)} | ${money(rate)}/${t("hour")} | ${item.status === "cancelled" ? money(0) : money(serviceAmount(item, dog))}`,
     );
   });
   lines.push(
     "",
-    `Earned: ${currency(totals.earned)}`,
-    `Potential: ${currency(totals.potential)}`,
-    `Combined total: ${currency(totals.earned + totals.potential)}`,
+    t("Earned: {amount}", { amount: money(totals.earned) }),
+    t("Potential: {amount}", { amount: money(totals.potential) }),
+    t("Combined total: {amount}", {
+      amount: money(totals.earned + totals.potential),
+    }),
   );
   return lines.join("\n");
 };

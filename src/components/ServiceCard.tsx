@@ -11,7 +11,8 @@ import {
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
 import type { Dog, Service } from "../types";
-import { currency, durationLabel, serviceAmount } from "../utils/earnings";
+import { serviceAmount } from "../utils/earnings";
+import { useLanguage } from "../i18n/LanguageContext";
 import { Badge, Button, Card, Muted, Row } from "../styles";
 import { ServiceFormModal } from "./ServiceFormModal";
 
@@ -62,6 +63,7 @@ export const ServiceCard = ({
   showGroup?: boolean;
 }) => {
   const { setServiceStatus } = useApp();
+  const { t, money, duration, group, status } = useLanguage();
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(false);
   return (
@@ -71,14 +73,14 @@ export const ServiceCard = ({
         <Body>
           <Row style={{ justifyContent: "space-between", gap: 5 }}>
             <Name to={`/dogs/${dog.id}`}>{dog.name}</Name>
-            <strong>{currency(serviceAmount(service, dog))}</strong>
+            <strong>{money(serviceAmount(service, dog))}</strong>
           </Row>
           <Row style={{ marginTop: 6, gap: 8 }}>
             <Muted>
               <Clock3 size={12} style={{ verticalAlign: -2 }} />{" "}
-              {durationLabel(service.durationMinutes)}
+              {duration(service.durationMinutes)}
             </Muted>
-            {showGroup && <Muted>{service.group}</Muted>}
+            {showGroup && <Muted>{group(service.group)}</Muted>}
             <Badge
               $tone={
                 service.status === "completed"
@@ -88,7 +90,7 @@ export const ServiceCard = ({
                     : "amber"
               }
             >
-              {service.status}
+              {status(service.status)}
             </Badge>
           </Row>
           {service.status === "scheduled" && (
@@ -99,7 +101,7 @@ export const ServiceCard = ({
                 $variant="primary"
                 onClick={() => setServiceStatus(service.id, "completed")}
               >
-                <Check size={15} /> Complete
+                <Check size={15} /> {t("Complete")}
               </Button>
               <Button
                 type="button"
@@ -107,7 +109,7 @@ export const ServiceCard = ({
                 onClick={() => setExpanded((value) => !value)}
                 aria-expanded={expanded}
               >
-                <MoreHorizontal size={15} /> More
+                <MoreHorizontal size={15} /> {t("More")}
               </Button>
             </Menu>
           )}
@@ -119,14 +121,14 @@ export const ServiceCard = ({
                 onClick={() => setExpanded((value) => !value)}
                 aria-expanded={expanded}
               >
-                <MoreHorizontal size={15} /> More
+                <MoreHorizontal size={15} /> {t("More")}
               </Button>
             </Menu>
           )}
           {expanded && (
             <Menu>
               <Button type="button" $small onClick={() => setEditing(true)}>
-                <Pencil size={14} /> Edit
+                <Pencil size={14} /> {t("Edit")}
               </Button>
               {service.status === "scheduled" ? (
                 <Button
@@ -135,7 +137,7 @@ export const ServiceCard = ({
                   $variant="danger"
                   onClick={() => setServiceStatus(service.id, "cancelled")}
                 >
-                  <X size={14} /> Cancel service
+                  <X size={14} /> {t("Cancel service")}
                 </Button>
               ) : (
                 <Button
@@ -143,7 +145,7 @@ export const ServiceCard = ({
                   $small
                   onClick={() => setServiceStatus(service.id, "scheduled")}
                 >
-                  <RotateCcw size={14} /> Restore to schedule
+                  <RotateCcw size={14} /> {t("Restore to schedule")}
                 </Button>
               )}
             </Menu>

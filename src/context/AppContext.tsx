@@ -15,6 +15,8 @@ import type {
   ServiceStatus,
 } from "../types";
 import { readData, removeDog, writeData } from "../storage/data";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 
 interface AppActions {
   data: PawtineraryData;
@@ -28,7 +30,7 @@ interface AppActions {
   addService: (input: ServiceInput) => boolean;
   updateService: (id: string, input: ServiceInput) => boolean;
   setServiceStatus: (id: string, status: ServiceStatus) => void;
-  notify: (message: string) => void;
+  notify: (message: TranslationKey) => void;
   toast: string;
 }
 
@@ -56,20 +58,22 @@ const makeService = (input: ServiceInput): Service => ({
 });
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  const { t } = useLanguage();
   const [data, setData] = useState<PawtineraryData>(readData);
-  const [toast, setToast] = useState("");
+  const [toastKey, setToastKey] = useState<TranslationKey | null>(null);
+  const toast = toastKey ? t(toastKey) : "";
   useEffect(() => {
     if (!writeData(data))
-      setToast(
+      setToastKey(
         "Browser storage is unavailable. Changes may not survive a refresh.",
       );
   }, [data]);
   useEffect(() => {
-    if (!toast) return;
-    const id = window.setTimeout(() => setToast(""), 3500);
+    if (!toastKey) return;
+    const id = window.setTimeout(() => setToastKey(null), 3500);
     return () => window.clearTimeout(id);
-  }, [toast]);
-  const notify = (message: string) => setToast(message);
+  }, [toastKey]);
+  const notify = (message: TranslationKey) => setToastKey(message);
 
   const actions = useMemo<AppActions>(
     () => ({
@@ -186,7 +190,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         );
       },
     }),
-    [data, toast],
+    [data, toast, t],
   );
   return <Context.Provider value={actions}>{children}</Context.Provider>;
 };

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { styled } from "styled-components";
 import { IconButton } from "../styles";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const Backdrop = styled.div`
   position: fixed;
@@ -56,6 +57,7 @@ export const Modal = ({
   onClose: () => void;
   children: ReactNode;
 }) => {
+  const { t } = useLanguage();
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
@@ -103,7 +105,7 @@ export const Modal = ({
           <IconButton
             type="button"
             $variant="ghost"
-            aria-label="Close"
+            aria-label={t("Close")}
             onClick={onClose}
           >
             <X size={19} />

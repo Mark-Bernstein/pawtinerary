@@ -119,6 +119,45 @@ try {
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
   assert.equal(await page.getByRole('navigation', { name: 'Primary navigation' }).isVisible(), true);
   if (screenshots) await page.screenshot({ path: '/private/tmp/pawtinerary-desktop.png', fullPage: true });
+
+  await page.getByRole('button', { name: 'Language' }).click();
+  await page.getByRole('button', { name: 'Spanish' }).click();
+  await page.getByRole('link', { name: 'Agenda' }).first().click();
+  await page.getByText('Los buenos paseos empiezan con un buen plan.').waitFor();
+  await page.getByRole('button', { name: 'Crear perro' }).first().click();
+  await page.getByRole('button', { name: 'Crear perro' }).last().click();
+  await page.getByText('Introduce el nombre del perro.').waitFor();
+  await page.getByRole('button', { name: 'Idioma' }).click();
+  await page.getByRole('button', { name: 'Catalán' }).click();
+  await page.getByText('Introdueix el nom del gos.').waitFor();
+  await page.reload();
+  assert.equal(await page.locator('html').getAttribute('lang'), 'ca');
+  await page.getByLabel('Nom del gos *').waitFor();
+  await page.getByRole('link', { name: 'Agenda' }).first().click();
+  await page.getByRole('button', { name: 'Enviar dades' }).click();
+  await page.getByRole('button', { name: "Copiar el text de l'informe" }).click();
+  const catalanReport = await page.evaluate(() => navigator.clipboard.readText());
+  assert(catalanReport.includes('SERVEIS'));
+  assert(catalanReport.includes('Informe:'));
+  const catalanDownloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Baixar DOCX' }).click();
+  const catalanDownload = await catalanDownloadPromise;
+  assert(catalanDownload.suggestedFilename().startsWith('Pawtinerary-Mes-'));
+  const catalanXml = execFileSync('unzip', ['-p', await catalanDownload.path(), 'word/document.xml'], { encoding: 'utf8' });
+  assert(catalanXml.includes('Informe de serveis'));
+  assert(catalanXml.includes('No hi ha serveis en aquest període.'));
+  await page.getByRole('button', { name: 'Tancar' }).click();
+  await page.setViewportSize({ width: 320, height: 700 });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+  if (screenshots) { await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: '/private/tmp/pawtinerary-catalan-320.png', fullPage: true }); }
+  for (const width of [390, 768, 1119, 1120, 1280]) {
+    await page.setViewportSize({ width, height: 850 });
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `Horizontal overflow at ${width}px`);
+  }
+  await page.getByRole('button', { name: 'Llengua' }).click();
+  await page.getByRole('button', { name: 'Anglès (predeterminat)' }).click();
+  await page.getByRole('link', { name: 'Schedule' }).last().waitFor();
+  assert.equal(await page.locator('html').getAttribute('lang'), 'en');
   assert.deepEqual(errors, []);
   console.log('Pawtinerary mobile and desktop smoke workflows passed.');
 } finally {

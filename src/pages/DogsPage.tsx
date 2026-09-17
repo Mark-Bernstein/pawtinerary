@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { Plus, Search } from "lucide-react";
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
-import { formatShortDay, todayKey } from "../utils/dates";
-import { currency } from "../utils/earnings";
+import { useLanguage } from "../i18n/LanguageContext";
+import { todayKey } from "../utils/dates";
 import {
   Button,
   Card,
@@ -61,6 +61,7 @@ const SearchWrap = styled.div`
 `;
 export const DogsPage = () => {
   const { data } = useApp();
+  const { t, money, shortDay } = useLanguage();
   const [query, setQuery] = useState("");
   const dogs = data.dogs
     .filter((dog) =>
@@ -73,22 +74,22 @@ export const DogsPage = () => {
     <Page>
       <TopRow>
         <div>
-          <Eyebrow>YOUR COMPANIONS</Eyebrow>
-          <Title>Dogs</Title>
+          <Eyebrow>{t("YOUR COMPANIONS")}</Eyebrow>
+          <Title>{t("Dogs")}</Title>
           <Subtitle>
-            Every profile, detail, and upcoming visit in one place.
+            {t("Every profile, detail, and upcoming visit in one place.")}
           </Subtitle>
         </div>
         <Button $variant="primary" as={Link} to="/dogs/new">
-          <Plus size={17} /> Create Dog
+          <Plus size={17} /> {t("Create Dog")}
         </Button>
       </TopRow>
       {data.dogs.length > 0 && (
         <SearchWrap>
           <Search size={18} />
           <Input
-            aria-label="Search dogs"
-            placeholder="Search dogs or clients"
+            aria-label={t("Search dogs")}
+            placeholder={t("Search dogs or clients")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -115,7 +116,9 @@ export const DogsPage = () => {
                         {dog.name}
                       </strong>
                       <div>
-                        <Muted>{dog.ownerName || "No client name yet"}</Muted>
+                        <Muted>
+                          {dog.ownerName || t("No client name yet")}
+                        </Muted>
                       </div>
                     </div>
                   </Row>
@@ -130,17 +133,19 @@ export const DogsPage = () => {
                     }}
                   >
                     <div>
-                      <Muted>Hourly rate</Muted>
+                      <Muted>{t("Hourly rate")}</Muted>
                       <div style={{ fontWeight: 800 }}>
-                        {currency(dog.hourlyRate)}
+                        {money(dog.hourlyRate)}
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <Muted>{upcoming.length} upcoming</Muted>
+                      <Muted>
+                        {t("{count} upcoming", { count: upcoming.length })}
+                      </Muted>
                       <div style={{ fontWeight: 700, fontSize: 13 }}>
                         {upcoming[0]
-                          ? formatShortDay(upcoming[0].date)
-                          : "No visits planned"}
+                          ? shortDay(upcoming[0].date)
+                          : t("No visits planned")}
                       </div>
                     </div>
                   </div>
@@ -153,13 +158,13 @@ export const DogsPage = () => {
         <EmptyState
           title={
             data.dogs.length
-              ? "No dogs match your search."
-              : "No dogs yet. Create your first dog to get started."
+              ? t("No dogs match your search.")
+              : t("No dogs yet. Create your first dog to get started.")
           }
           action={
             data.dogs.length ? undefined : (
               <Button as={Link} to="/dogs/new" $variant="primary">
-                <Plus size={16} /> Create Dog
+                <Plus size={16} /> {t("Create Dog")}
               </Button>
             )
           }

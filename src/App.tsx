@@ -13,6 +13,7 @@ import {
   ChartNoAxesCombined,
   Dog,
   FileUp,
+  Languages,
   PawPrint,
   Plus,
 } from "lucide-react";
@@ -27,6 +28,8 @@ import { DogsPage } from "./pages/DogsPage";
 import { DogDetailPage } from "./pages/DogDetailPage";
 import { DogFormPage } from "./pages/DogFormPage";
 import { EarningsPage } from "./pages/EarningsPage";
+import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
+import { LanguageModal } from "./components/LanguageModal";
 
 const Header = styled.header`
   background: #fff;
@@ -45,7 +48,7 @@ const HeaderInner = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  @media (min-width: 850px) {
+  @media (min-width: 1120px) {
     padding: 14px 32px;
     flex-wrap: nowrap;
   }
@@ -64,11 +67,17 @@ const Brand = styled(NavLink)`
     fill: #e6ad57;
     stroke: #254b38;
   }
+  @media (max-width: 360px) {
+    font-size: 20px;
+    svg {
+      display: none;
+    }
+  }
 `;
 const Nav = styled.nav`
   display: none;
   gap: 4px;
-  @media (min-width: 850px) {
+  @media (min-width: 1120px) {
     display: flex;
   }
   a {
@@ -84,23 +93,25 @@ const Nav = styled.nav`
   }
 `;
 const HeaderActions = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: 5px;
   width: 100%;
-  overflow-x: auto;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  @media (min-width: 850px) {
+  @media (min-width: 1120px) {
+    display: flex;
     width: auto;
   }
   button {
-    flex: none;
+    min-width: 0;
     min-height: 42px;
-    padding-inline: 9px;
-    font-size: 12px;
+    padding-inline: 5px;
+    font-size: 11px;
+    gap: 4px;
+    @media (min-width: 1120px) {
+      padding-inline: 9px;
+      font-size: 12px;
+    }
   }
 `;
 const CalcButton = styled.button`
@@ -114,7 +125,7 @@ const CalcButton = styled.button`
   place-items: center;
   flex: none;
   margin-left: auto;
-  @media (min-width: 850px) {
+  @media (min-width: 1120px) {
     margin-left: 0;
   }
 `;
@@ -130,7 +141,7 @@ const MobileNav = styled.nav`
   border-top: 1px solid #e2e9e1;
   padding: 7px 10px calc(7px + env(safe-area-inset-bottom));
   box-shadow: 0 -8px 22px #16362410;
-  @media (min-width: 850px) {
+  @media (min-width: 1120px) {
     display: none;
   }
   a {
@@ -165,7 +176,7 @@ const Toast = styled.div`
   min-width: max-content;
   max-width: calc(100vw - 25px);
   text-align: center;
-  @media (min-width: 850px) {
+  @media (min-width: 1120px) {
     bottom: 25px;
   }
 `;
@@ -173,13 +184,15 @@ const navItems = [
   { to: "/", title: "Schedule", Icon: CalendarDays },
   { to: "/dogs", title: "Dogs", Icon: Dog },
   { to: "/earnings", title: "Earnings", Icon: ChartNoAxesCombined },
-];
+] as const;
 
 const Shell = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { toast } = useApp();
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [serviceOptions, setServiceOptions] = useState<{
     dogId?: string;
     date?: string;
@@ -191,33 +204,36 @@ const Shell = () => {
           <Brand to="/">
             <PawPrint size={27} /> Pawtinerary
           </Brand>
-          <Nav aria-label="Primary navigation">
+          <Nav aria-label={t("Primary navigation")}>
             {navItems.map(({ to, title }) => (
               <NavLink key={to} to={to} end={to === "/"}>
-                {title}
+                {t(title)}
               </NavLink>
             ))}
           </Nav>
+          <Button $small onClick={() => setLanguageOpen(true)}>
+            <Languages size={16} /> {t("Language")}
+          </Button>
           <CalcButton
-            aria-label="Open calculator"
-            title="Calculator"
+            aria-label={t("Open calculator")}
+            title={t("Calculator")}
             onClick={() => setCalculatorOpen(true)}
           >
             <CalculatorIcon size={21} />
           </CalcButton>
           <HeaderActions>
             <Button $small onClick={() => navigate("/dogs/new")}>
-              <Plus size={15} /> Create Dog
+              <Plus size={15} /> {t("Create Dog")}
             </Button>
             <Button
               $small
               $variant="primary"
               onClick={() => setServiceOptions({})}
             >
-              <Plus size={15} /> Add Service
+              <Plus size={15} /> {t("Add Service")}
             </Button>
             <Button $small onClick={() => setReportOpen(true)}>
-              <FileUp size={15} /> Send Data
+              <FileUp size={15} /> {t("Send Data")}
             </Button>
           </HeaderActions>
         </HeaderInner>
@@ -244,17 +260,18 @@ const Shell = () => {
         <Route path="/earnings" element={<EarningsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <MobileNav aria-label="Mobile navigation">
+      <MobileNav aria-label={t("Mobile navigation")}>
         {navItems.map(({ to, title, Icon }) => (
           <NavLink key={to} to={to} end={to === "/"}>
             <Icon size={21} />
-            {title}
+            {t(title)}
           </NavLink>
         ))}
       </MobileNav>
       {calculatorOpen && (
         <Calculator onClose={() => setCalculatorOpen(false)} />
       )}
+      {languageOpen && <LanguageModal onClose={() => setLanguageOpen(false)} />}
       {reportOpen && <ReportExportModal onClose={() => setReportOpen(false)} />}
       {serviceOptions && (
         <ServiceFormModal
@@ -269,9 +286,11 @@ const Shell = () => {
 };
 export const App = () => (
   <BrowserRouter>
-    <AppProvider>
-      <GlobalStyle />
-      <Shell />
-    </AppProvider>
+    <LanguageProvider>
+      <AppProvider>
+        <GlobalStyle />
+        <Shell />
+      </AppProvider>
+    </LanguageProvider>
   </BrowserRouter>
 );

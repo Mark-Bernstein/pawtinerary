@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Copy, Download, Share2 } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { useLanguage } from "../i18n/LanguageContext";
 import type { Period } from "../types";
 import { todayKey } from "../utils/dates";
 import {
@@ -14,6 +15,7 @@ import { Modal } from "./Modal";
 
 export const ReportExportModal = ({ onClose }: { onClose: () => void }) => {
   const { data, notify } = useApp();
+  const { language, t } = useLanguage();
   const [period, setPeriod] = useState<Period>("month");
   const [date, setDate] = useState(todayKey());
   const [busy, setBusy] = useState(false);
@@ -22,12 +24,13 @@ export const ReportExportModal = ({ onClose }: { onClose: () => void }) => {
     anchor: reportAnchor(date || todayKey()),
     dogs: data.dogs,
     services: data.services,
+    language,
   };
   const file = async () => {
     const { reportDocx } = await import("../utils/reportDocx");
     return new File(
       [await reportDocx(report)],
-      reportFileName(period, report.anchor),
+      reportFileName(period, report.anchor, language),
       {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       },
@@ -65,7 +68,10 @@ export const ReportExportModal = ({ onClose }: { onClose: () => void }) => {
     try {
       const result = await file();
       if (navigator.canShare?.({ files: [result] })) {
-        await navigator.share({ title: "Pawtinerary report", files: [result] });
+        await navigator.share({
+          title: t("Pawtinerary report"),
+          files: [result],
+        });
         notify("Report shared");
       } else
         notify(
@@ -79,30 +85,32 @@ export const ReportExportModal = ({ onClose }: { onClose: () => void }) => {
     }
   };
   return (
-    <Modal title="Send Data" onClose={onClose}>
+    <Modal title={t("Send Data")} onClose={onClose}>
       <Stack>
         <Muted>
-          Create a report locally, then download, copy, or share it.
+          {t("Create a report locally, then download, copy, or share it.")}
         </Muted>
         <Field>
-          Report period
+          {t("Report period")}
           <Select
             value={period}
             onChange={(event) => setPeriod(event.target.value as Period)}
           >
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-            <option value="lifetime">Lifetime</option>
+            <option value="day">{t("Day")}</option>
+            <option value="week">{t("Week")}</option>
+            <option value="month">{t("Month")}</option>
+            <option value="lifetime">{t("Lifetime")}</option>
           </Select>
         </Field>
         {period !== "lifetime" && (
           <Field>
-            {period === "day"
-              ? "Select day"
-              : period === "week"
-                ? "Select a day in the week"
-                : "Select a day in the month"}
+            {t(
+              period === "day"
+                ? "Select day"
+                : period === "week"
+                  ? "Select a day in the week"
+                  : "Select a day in the month",
+            )}
             <Input
               type="date"
               value={date}
@@ -111,21 +119,21 @@ export const ReportExportModal = ({ onClose }: { onClose: () => void }) => {
           </Field>
         )}
         <div style={{ padding: 16, borderRadius: 14, background: "#f4f7f1" }}>
-          <strong>{reportPeriodLabel(period, report.anchor)}</strong>
+          <strong>{reportPeriodLabel(period, report.anchor, language)}</strong>
           <div>
-            <Muted>Entry and access instructions are excluded.</Muted>
+            <Muted>{t("Entry and access instructions are excluded.")}</Muted>
           </div>
         </div>
         <Row>
           <Button $variant="primary" disabled={busy} onClick={download}>
-            <Download size={16} /> Download DOCX
+            <Download size={16} /> {t("Download DOCX")}
           </Button>
           <Button disabled={busy} onClick={copy}>
-            <Copy size={16} /> Copy Report Text
+            <Copy size={16} /> {t("Copy Report Text")}
           </Button>
           {typeof navigator.share === "function" && (
             <Button disabled={busy} onClick={share}>
-              <Share2 size={16} /> Share Report
+              <Share2 size={16} /> {t("Share Report")}
             </Button>
           )}
         </Row>

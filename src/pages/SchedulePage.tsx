@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { format, isSameMonth, isToday } from "date-fns";
+import { isSameMonth, isToday } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
+import { useLanguage } from "../i18n/LanguageContext";
 import type { Group, Service } from "../types";
 import {
   dateKey,
-  formatDay,
   fromKey,
   monthGrid,
   moveDate,
@@ -15,7 +15,7 @@ import {
   weekEnd,
   weekStart,
 } from "../utils/dates";
-import { currency, getTotals } from "../utils/earnings";
+import { getTotals } from "../utils/earnings";
 import {
   Badge,
   Button,
@@ -167,6 +167,14 @@ export const SchedulePage = ({
   onCreate: () => void;
 }) => {
   const { data } = useApp();
+  const {
+    t,
+    money,
+    date,
+    day: localizedDay,
+    group: groupLabel,
+    status,
+  } = useLanguage();
   const [view, setView] = useState<View>(readView);
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const anchor = fromKey(selectedDate);
@@ -196,10 +204,10 @@ export const SchedulePage = ({
   const totals = getTotals(data.services, data.dogs, period, anchor);
   const periodLabel =
     view === "today"
-      ? formatDay(selectedDate)
+      ? localizedDay(selectedDate)
       : view === "week"
-        ? `${format(weekStart(anchor), "d MMM")} – ${format(weekEnd(anchor), "d MMM yyyy")}`
-        : format(anchor, "MMMM yyyy");
+        ? `${date(weekStart(anchor), "d MMM")} – ${date(weekEnd(anchor), "d MMM yyyy")}`
+        : date(anchor, "MMMM yyyy");
   const openDay = (key: string) => {
     setSelectedDate(key);
     setViewAndRemember("today");
@@ -208,20 +216,20 @@ export const SchedulePage = ({
     <Page>
       <TopRow>
         <div>
-          <Eyebrow>YOUR WORKSPACE</Eyebrow>
-          <Title>Schedule</Title>
-          <Subtitle>Good walks start with a good plan.</Subtitle>
+          <Eyebrow>{t("YOUR WORKSPACE")}</Eyebrow>
+          <Title>{t("Schedule")}</Title>
+          <Subtitle>{t("Good walks start with a good plan.")}</Subtitle>
         </div>
         <Row>
           <Button $variant="secondary" onClick={onCreate}>
-            <Plus size={17} /> Create Dog
+            <Plus size={17} /> {t("Create Dog")}
           </Button>
           <Button $variant="primary" onClick={() => onAdd(selectedDate)}>
-            <Plus size={17} /> Add Service
+            <Plus size={17} /> {t("Add Service")}
           </Button>
         </Row>
       </TopRow>
-      <Switcher role="tablist" aria-label="Schedule view">
+      <Switcher role="tablist" aria-label={t("Schedule view")}>
         {(["today", "week", "month"] as View[]).map((item) => (
           <button
             key={item}
@@ -229,20 +237,32 @@ export const SchedulePage = ({
             aria-selected={view === item}
             onClick={() => setViewAndRemember(item)}
           >
-            {item === "today" ? "Today" : item === "week" ? "Week" : "Month"}
+            {t(item === "today" ? "Today" : item === "week" ? "Week" : "Month")}
           </button>
         ))}
       </Switcher>
       <NavBar>
         <Row>
           <IconButton
-            aria-label={`Previous ${view === "today" ? "day" : view}`}
+            aria-label={t(
+              view === "today"
+                ? "Previous day"
+                : view === "week"
+                  ? "Previous week"
+                  : "Previous month",
+            )}
             onClick={() => setSelectedDate(dateKey(moveDate(anchor, -1, view)))}
           >
             <ChevronLeft size={19} />
           </IconButton>
           <IconButton
-            aria-label={`Next ${view === "today" ? "day" : view}`}
+            aria-label={t(
+              view === "today"
+                ? "Next day"
+                : view === "week"
+                  ? "Next week"
+                  : "Next month",
+            )}
             onClick={() => setSelectedDate(dateKey(moveDate(anchor, 1, view)))}
           >
             <ChevronRight size={19} />
@@ -250,18 +270,21 @@ export const SchedulePage = ({
           <h2>{periodLabel}</h2>
         </Row>
         <Button $small onClick={() => setSelectedDate(todayKey())}>
-          Today
+          {t("Today")}
         </Button>
       </NavBar>
       {view !== "today" && (
         <Summary style={{ marginBottom: 22 }}>
           <div>
-            <span>{view === "week" ? "THIS WEEK" : "THIS MONTH"} · EARNED</span>
-            <strong>{currency(totals.earned)}</strong>
+            <span>
+              {t(view === "week" ? "THIS WEEK" : "THIS MONTH")} ·{" "}
+              {t("Earned").toUpperCase()}
+            </span>
+            <strong>{money(totals.earned)}</strong>
           </div>
           <div>
-            <span>POTENTIAL</span>
-            <strong>{currency(totals.potential)}</strong>
+            <span>{t("Potential").toUpperCase()}</span>
+            <strong>{money(totals.potential)}</strong>
           </div>
         </Summary>
       )}
@@ -269,12 +292,12 @@ export const SchedulePage = ({
         <>
           <Summary style={{ marginBottom: 24 }}>
             <div>
-              <span>DAY EARNED</span>
-              <strong>{currency(totals.earned)}</strong>
+              <span>{t("DAY EARNED")}</span>
+              <strong>{money(totals.earned)}</strong>
             </div>
             <div>
-              <span>DAY POTENTIAL</span>
-              <strong>{currency(totals.potential)}</strong>
+              <span>{t("DAY POTENTIAL")}</span>
+              <strong>{money(totals.potential)}</strong>
             </div>
           </Summary>
           <Grid $min={300}>
@@ -285,20 +308,22 @@ export const SchedulePage = ({
               return (
                 <GroupWrap key={group}>
                   <GroupHead>
-                    <SectionTitle>{group}</SectionTitle>
+                    <SectionTitle>{groupLabel(group)}</SectionTitle>
                     <Badge $tone="green">
                       {items.length}{" "}
-                      {items.length === 1 ? "service" : "services"}
+                      {t(items.length === 1 ? "service" : "services")}
                     </Badge>
                   </GroupHead>
                   {items.length ? (
                     renderServices(items)
                   ) : (
                     <EmptyState
-                      title={`Nothing scheduled for ${group}.`}
+                      title={t("Nothing scheduled for {group}.", {
+                        group: groupLabel(group),
+                      })}
                       action={
                         <Button $small onClick={() => onAdd(selectedDate)}>
-                          Add service
+                          {t("Add service")}
                         </Button>
                       }
                     />
@@ -318,9 +343,9 @@ export const SchedulePage = ({
               <DayCard key={key} onClick={() => openDay(key)}>
                 <Row style={{ justifyContent: "space-between" }}>
                   <SectionTitle style={{ fontSize: 17 }}>
-                    {format(day, "EEE d")}
+                    {date(day, "EEE d")}
                   </SectionTitle>
-                  {isToday(day) && <Badge $tone="green">Today</Badge>}
+                  {isToday(day) && <Badge $tone="green">{t("Today")}</Badge>}
                 </Row>
                 {items.length ? (
                   <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
@@ -331,7 +356,7 @@ export const SchedulePage = ({
                       return groupItems.length ? (
                         <div key={group}>
                           <Muted style={{ fontSize: 11, fontWeight: 700 }}>
-                            {group}
+                            {groupLabel(group)}
                           </Muted>
                           {groupItems.map((item) => (
                             <div
@@ -339,8 +364,8 @@ export const SchedulePage = ({
                               style={{ fontSize: 13, marginTop: 2 }}
                             >
                               {data.dogs.find((dog) => dog.id === item.dogId)
-                                ?.name ?? "Unknown dog"}{" "}
-                              <Muted>· {item.status}</Muted>
+                                ?.name ?? t("Unknown dog")}{" "}
+                              <Muted>· {status(item.status)}</Muted>
                             </div>
                           ))}
                         </div>
@@ -349,7 +374,7 @@ export const SchedulePage = ({
                   </div>
                 ) : (
                   <Muted style={{ display: "block", marginTop: 15 }}>
-                    No services
+                    {t("No services")}
                   </Muted>
                 )}
               </DayCard>
@@ -360,12 +385,12 @@ export const SchedulePage = ({
       {view === "month" && (
         <>
           <Calendar style={{ marginBottom: 6 }}>
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+            {weekDays(anchor).map((weekday) => (
               <Muted
-                key={day}
+                key={dateKey(weekday)}
                 style={{ textAlign: "center", fontWeight: 700, fontSize: 11 }}
               >
-                {day}
+                {date(weekday, "EEE")}
               </Muted>
             ))}
           </Calendar>
@@ -379,16 +404,20 @@ export const SchedulePage = ({
                   $outside={!isSameMonth(day, anchor)}
                   $today={isToday(day)}
                   onClick={() => openDay(key)}
-                  aria-label={`${format(day, "d MMMM yyyy")}, ${items.length} services`}
+                  aria-label={`${date(day, "d MMMM yyyy")}, ${items.length} ${t(items.length === 1 ? "service" : "services")}`}
                 >
-                  <strong>{format(day, "d")}</strong>
+                  <strong>{date(day, "d")}</strong>
                   {items.slice(0, 2).map((item) => (
                     <span key={item.id}>
                       {data.dogs.find((dog) => dog.id === item.dogId)?.name ??
-                        "Dog"}
+                        t("Dog")}
                     </span>
                   ))}
-                  {items.length > 2 && <span>+{items.length - 2} more</span>}
+                  {items.length > 2 && (
+                    <span>
+                      {t("+{count} more", { count: items.length - 2 })}
+                    </span>
+                  )}
                 </CalendarDay>
               );
             })}
@@ -398,11 +427,13 @@ export const SchedulePage = ({
       {data.dogs.length === 0 && (
         <div style={{ marginTop: 25 }}>
           <EmptyState
-            title="No dogs yet. Create your first dog to get started."
-            description="Add a profile, then plan individual walks and see your earnings here."
+            title={t("No dogs yet. Create your first dog to get started.")}
+            description={t(
+              "Add a profile, then plan individual walks and see your earnings here.",
+            )}
             action={
               <Button $variant="primary" onClick={onCreate}>
-                <Plus size={16} /> Create Dog
+                <Plus size={16} /> {t("Create Dog")}
               </Button>
             }
           />

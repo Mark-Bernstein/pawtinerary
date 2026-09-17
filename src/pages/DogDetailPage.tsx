@@ -12,9 +12,10 @@ import {
 } from "lucide-react";
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
+import { useLanguage } from "../i18n/LanguageContext";
 import type { Service } from "../types";
-import { formatShortDay, todayKey } from "../utils/dates";
-import { currency, getTotals } from "../utils/earnings";
+import { todayKey } from "../utils/dates";
+import { getTotals } from "../utils/earnings";
 import {
   Badge,
   Button,
@@ -76,15 +77,16 @@ export const DogDetailPage = ({
 }) => {
   const { id } = useParams();
   const { data, deleteDog, notify } = useApp();
+  const { t, money, shortDay } = useLanguage();
   const navigate = useNavigate();
   const [confirmStep, setConfirmStep] = useState(0);
   const dog = data.dogs.find((item) => item.id === id);
   if (!dog)
     return (
       <Page>
-        <Title>Dog not found</Title>
+        <Title>{t("Dog not found")}</Title>
         <Button as={Link} to="/dogs">
-          Back to Dogs
+          {t("Back to Dogs")}
         </Button>
       </Page>
     );
@@ -104,9 +106,9 @@ export const DogDetailPage = ({
         <Muted
           style={{ display: "block", fontWeight: 700, margin: "0 0 6px 2px" }}
         >
-          {formatShortDay(item.date)}{" "}
+          {shortDay(item.date)}{" "}
           {item.date < todayKey() && item.status === "scheduled" && (
-            <Badge $tone="amber">Past due</Badge>
+            <Badge $tone="amber">{t("Past due")}</Badge>
           )}
         </Muted>
         <ServiceCard service={item} dog={dog} showGroup />
@@ -129,112 +131,119 @@ export const DogDetailPage = ({
     <Page>
       <TopRow>
         <div>
-          <Eyebrow>DOG PROFILE</Eyebrow>
+          <Eyebrow>{t("DOG PROFILE")}</Eyebrow>
           <Title>{dog.name}</Title>
-          <Subtitle>Everything you need for the next visit.</Subtitle>
+          <Subtitle>{t("Everything you need for the next visit.")}</Subtitle>
         </div>
         <Row>
           <Button as={Link} to="/dogs">
-            <ArrowLeft size={16} /> Dogs
+            <ArrowLeft size={16} /> {t("Dogs")}
           </Button>
           <Button as={Link} to={`/dogs/${dog.id}/edit`}>
-            <Pencil size={16} /> Edit Info
+            <Pencil size={16} /> {t("Edit Info")}
           </Button>
           <Button $variant="primary" onClick={() => onAdd(dog.id)}>
-            <Plus size={16} /> Add Service
+            <Plus size={16} /> {t("Add Service")}
           </Button>
         </Row>
       </TopRow>
       <Grid $min={320} style={{ marginBottom: 25 }}>
         <InfoCard>
-          <SectionTitle>Profile</SectionTitle>
+          <SectionTitle>{t("Profile")}</SectionTitle>
           <Divider />
           <div>
-            <Label>Address · tap to copy</Label>
+            <Label>{t("Address · tap to copy")}</Label>
             <AddressButton onClick={copyAddress}>
               <MapPin size={16} /> {dog.address} <Copy size={14} />
             </AddressButton>
           </div>
           <div>
-            <Label>Hourly rate</Label>
-            <strong>{currency(dog.hourlyRate)} / hour</strong>
+            <Label>{t("Hourly rate")}</Label>
+            <strong>
+              {money(dog.hourlyRate)} / {t("hour")}
+            </strong>
           </div>
           <div>
-            <Label>Owner / client</Label>
-            <strong>{dog.ownerName || "Not provided"}</strong>
+            <Label>{t("Owner / client")}</Label>
+            <strong>{dog.ownerName || t("Not provided")}</strong>
           </div>
           <div>
-            <Label>Phone</Label>
+            <Label>{t("Phone")}</Label>
             {dog.ownerPhone ? (
               <a href={`tel:${dog.ownerPhone}`}>
                 <Phone size={14} /> {dog.ownerPhone}
               </a>
             ) : (
-              <Muted>Not provided</Muted>
+              <Muted>{t("Not provided")}</Muted>
             )}
           </div>
           <div>
-            <Label>Email</Label>
+            <Label>{t("Email")}</Label>
             {dog.ownerEmail ? (
               <a href={`mailto:${dog.ownerEmail}`}>
                 <Mail size={14} /> {dog.ownerEmail}
               </a>
             ) : (
-              <Muted>Not provided</Muted>
+              <Muted>{t("Not provided")}</Muted>
             )}
           </div>
         </InfoCard>
         <InfoCard>
-          <SectionTitle>Visit information</SectionTitle>
+          <SectionTitle>{t("Visit information")}</SectionTitle>
           <Divider />
           <div>
-            <Label>Notes</Label>
+            <Label>{t("Notes")}</Label>
             <div style={{ whiteSpace: "pre-wrap" }}>
-              {dog.notes || <Muted>No notes yet</Muted>}
+              {dog.notes || <Muted>{t("No notes yet")}</Muted>}
             </div>
           </div>
           <div>
-            <Label>Entry / access instructions</Label>
+            <Label>{t("Entry / access instructions")}</Label>
             <div style={{ whiteSpace: "pre-wrap" }}>
               {dog.accessInstructions || (
-                <Muted>No access instructions yet</Muted>
+                <Muted>{t("No access instructions yet")}</Muted>
               )}
             </div>
           </div>
         </InfoCard>
       </Grid>
       <Stack $gap={15} style={{ marginBottom: 30 }}>
-        <SectionTitle>Earnings for {dog.name}</SectionTitle>
+        <SectionTitle>
+          {t("Earnings for {dog}", { dog: dog.name })}
+        </SectionTitle>
         <Grid>
           <EarningsCard
-            title="Today"
+            title={t("Today")}
             totals={getTotals(services, [dog], "day", new Date())}
           />
           <EarningsCard
-            title="This Week"
+            title={t("This Week")}
             totals={getTotals(services, [dog], "week", new Date())}
           />
           <EarningsCard
-            title="This Month"
+            title={t("This Month")}
             totals={getTotals(services, [dog], "month", new Date())}
           />
-          <EarningsCard title="Lifetime" totals={getTotals(services, [dog])} />
+          <EarningsCard
+            title={t("Lifetime")}
+            totals={getTotals(services, [dog])}
+          />
         </Grid>
       </Stack>
       <Stack $gap={25}>
         <ServiceSection>
           <Row style={{ justifyContent: "space-between" }}>
-            <SectionTitle>Scheduled services</SectionTitle>
+            <SectionTitle>{t("Scheduled services")}</SectionTitle>
             <Badge $tone="amber">{scheduled.length}</Badge>
           </Row>
           {scheduled.length ? (
             <Grid $min={280}>{render(scheduled)}</Grid>
           ) : (
             <EmptyState
-              title="No upcoming services scheduled."
+              title={t("No upcoming services scheduled.")}
               action={
                 <Button $small onClick={() => onAdd(dog.id)}>
-                  Add service
+                  {t("Add service")}
                 </Button>
               }
             />
@@ -242,19 +251,19 @@ export const DogDetailPage = ({
         </ServiceSection>
         <ServiceSection>
           <Row style={{ justifyContent: "space-between" }}>
-            <SectionTitle>Completed history</SectionTitle>
+            <SectionTitle>{t("Completed history")}</SectionTitle>
             <Badge $tone="green">{completed.length}</Badge>
           </Row>
           {completed.length ? (
             <Grid $min={280}>{render(completed)}</Grid>
           ) : (
-            <EmptyState title="No completed services yet." />
+            <EmptyState title={t("No completed services yet.")} />
           )}
         </ServiceSection>
         {cancelled.length > 0 && (
           <ServiceSection>
             <Row style={{ justifyContent: "space-between" }}>
-              <SectionTitle>Cancelled services</SectionTitle>
+              <SectionTitle>{t("Cancelled services")}</SectionTitle>
               <Badge $tone="gray">{cancelled.length}</Badge>
             </Row>
             <Grid $min={280}>{render(cancelled)}</Grid>
@@ -263,26 +272,31 @@ export const DogDetailPage = ({
       </Stack>
       <div style={{ marginTop: 36 }}>
         <Button $variant="danger" onClick={() => setConfirmStep(1)}>
-          <Trash2 size={16} /> Delete Dog
+          <Trash2 size={16} /> {t("Delete Dog")}
         </Button>
       </div>
       {confirmStep === 1 && (
-        <Modal title="Delete this dog?" onClose={() => setConfirmStep(0)}>
+        <Modal title={t("Delete this dog?")} onClose={() => setConfirmStep(0)}>
           <Stack>
             <p style={{ margin: 0, lineHeight: 1.6 }}>
-              You are about to delete {dog.name} and all associated services.
+              {t("You are about to delete {dog} and all associated services.", {
+                dog: dog.name,
+              })}
             </p>
             <Row style={{ justifyContent: "flex-end" }}>
-              <Button onClick={() => setConfirmStep(0)}>Cancel</Button>
+              <Button onClick={() => setConfirmStep(0)}>{t("Cancel")}</Button>
               <Button $variant="danger" onClick={() => setConfirmStep(2)}>
-                Delete
+                {t("Delete")}
               </Button>
             </Row>
           </Stack>
         </Modal>
       )}
       {confirmStep === 2 && (
-        <Modal title="Final confirmation" onClose={() => setConfirmStep(0)}>
+        <Modal
+          title={t("Final confirmation")}
+          onClose={() => setConfirmStep(0)}
+        >
           <Stack>
             <p
               style={{
@@ -292,13 +306,14 @@ export const DogDetailPage = ({
                 lineHeight: 1.6,
               }}
             >
-              Are you sure? Deleting this dog will remove all earnings from your
-              data.
+              {t(
+                "Are you sure? Deleting this dog will remove all earnings from your data.",
+              )}
             </p>
             <Row style={{ justifyContent: "flex-end" }}>
-              <Button onClick={() => setConfirmStep(0)}>Cancel</Button>
+              <Button onClick={() => setConfirmStep(0)}>{t("Cancel")}</Button>
               <Button $variant="danger" onClick={doDelete}>
-                Delete Dog
+                {t("Delete Dog")}
               </Button>
             </Row>
           </Stack>

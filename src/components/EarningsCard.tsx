@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 import type { Totals } from "../utils/earnings";
-import { currency } from "../utils/earnings";
 import { Card, Muted } from "../styles";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const Wrap = styled(Card)`
   padding: 19px;
@@ -30,18 +30,21 @@ export const EarningsCard = ({
 }: {
   title: string;
   totals: Totals;
-}) => (
-  <Wrap>
-    <Name>{title}</Name>
-    <Pair>
-      <div>
-        <Muted>Earned</Muted>
-        <strong>{currency(totals.earned)}</strong>
-      </div>
-      <div>
-        <Muted>Potential</Muted>
-        <strong>{currency(totals.potential)}</strong>
-      </div>
-    </Pair>
-  </Wrap>
-);
+}) => {
+  const { t, money } = useLanguage();
+  return (
+    <Wrap>
+      <Name>{title}</Name>
+      <Pair>
+        <div>
+          <Muted>{t("Earned")}</Muted>
+          <strong>{money(totals.earned)}</strong>
+        </div>
+        <div>
+          <Muted>{t("Potential")}</Muted>
+          <strong>{money(totals.potential)}</strong>
+        </div>
+      </Pair>
+    </Wrap>
+  );
+};

@@ -25,18 +25,19 @@ React, TypeScript, Vite, styled-components, React Router, date-fns, docx, and Vi
 - `src/pages`: Schedule, Dogs, dog profile and form, and Earnings screens.
 - `src/components`: service controls, dialogs, calculator, report export, and reusable cards.
 - `src/context/AppContext.tsx`: domain actions and app state.
+- `src/i18n`: English, Spanish, and Catalan wording, locale formatting, and language preference.
 - `src/storage/data.ts`: versioned browser storage parsing and writing.
 - `src/utils`: date, currency, earnings, and report logic.
 
 ## Data and calculations
 
-The browser stores `{ version: 1, dogs, services }` under `pawtinerary.data.v1` in `localStorage`. Changes persist automatically after add, edit, completion, cancellation, or deletion. The schedule view selection uses `sessionStorage`.
+The browser stores `{ version: 1, dogs, services }` under `pawtinerary.data.v1` in `localStorage`. Changes persist automatically after add, edit, completion, cancellation, or deletion. The selected language is stored separately under `pawtinerary.language.v1` and defaults to English. The schedule view selection uses `sessionStorage`.
 
 Each service belongs to one dog, date, and group, with duration in minutes. Scheduled services count toward **potential** earnings. Completed services count toward **earned** earnings. Cancelled services count toward neither. On completion, the dog's hourly rate is copied to the service, keeping historical earned amounts stable when the dog's rate changes. Scheduled services use the current rate. Deleting a dog also deletes every associated service.
 
 ## Reports
 
-Send Data creates a DOCX file in the browser for a selected day, week, month, or lifetime. It also offers plain text copy and file sharing when the device supports the Web Share API. Reports include dogs, client names when available, services, amounts, and totals. Entry and access instructions are never included. No email is sent by the app.
+Send Data creates a DOCX file in the browser for a selected day, week, month, or lifetime. It also offers plain text copy and file sharing when the device supports the Web Share API. Reports use the currently selected language and include dogs, client names when available, services, amounts, and totals. Entry and access instructions are never included. No email is sent by the app.
 
 ## MVP limits and backend migration
 

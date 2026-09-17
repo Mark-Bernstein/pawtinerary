@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { styled } from "styled-components";
 import { Modal } from "./Modal";
+import { useLanguage } from "../i18n/LanguageContext";
 
 type Operator = "+" | "−" | "×" | "÷";
 const Display = styled.div`
@@ -48,6 +49,7 @@ const calculate = (left: number, right: number, operator: Operator) =>
           ? NaN
           : left / right;
 export const Calculator = ({ onClose }: { onClose: () => void }) => {
+  const { t } = useLanguage();
   const [display, setDisplay] = useState("0");
   const [held, setHeld] = useState<number | null>(null);
   const [operator, setOperator] = useState<Operator | null>(null);
@@ -99,9 +101,9 @@ export const Calculator = ({ onClose }: { onClose: () => void }) => {
     }
   };
   return (
-    <Modal title="Calculator" onClose={onClose}>
+    <Modal title={t("Calculator")} onClose={onClose}>
       <Display aria-live="polite">
-        <strong>{display}</strong>
+        <strong>{display === "Error" ? t("Error") : display}</strong>
       </Display>
       <Keys>
         {[
@@ -130,7 +132,7 @@ export const Calculator = ({ onClose }: { onClose: () => void }) => {
             $wide={value === "0"}
             onClick={() => press(value)}
             aria-label={
-              value === "⌫" ? "Backspace" : value === "C" ? "Clear" : value
+              value === "⌫" ? t("Backspace") : value === "C" ? t("Clear") : value
             }
           >
             {value}
