@@ -15,13 +15,26 @@ try {
   await page.goto(base);
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
   await page.getByRole('button', { name: 'Create Dog' }).first().click();
+  await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
+  await page.getByText("Enter the dog's name.").waitFor();
+  await page.getByText('Enter an hourly rate in euros.').waitFor();
+  await page.getByText("Enter the dog's address.").waitFor();
+  assert(await page.getByLabel('Dog name *').evaluate(element => document.activeElement === element));
   await page.getByLabel('Dog name *').fill('Bailey');
-  await page.getByLabel('Hourly rate (€) *').fill('20');
+  await page.getByLabel('Hourly rate (€) *').fill('twenty');
   await page.getByLabel('Address *').fill('1 Main Street, Dublin');
   await page.getByLabel('Owner / client name').fill('Pat');
+  await page.getByLabel('Email').fill('not-an-email');
+  await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
+  await page.getByText('Enter a numeric hourly rate, such as 20 or 20.50.').waitFor();
+  await page.getByText('Enter a valid email address, such as pat@example.com.').waitFor();
+  await page.getByLabel('Hourly rate (€) *').fill('20');
+  await page.getByLabel('Email').fill('pat@example.com');
   await page.getByLabel('Entry / access instructions').fill('PRIVATE-CODE-123');
   await page.getByRole('button', { name: 'Add date' }).click();
   await page.getByRole('button', { name: 'Add date' }).click();
+  await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
+  await page.getByText('Group 1 is already planned for this date.').waitFor();
   await page.getByLabel('Group').nth(1).selectOption('Group 3');
   await page.getByLabel('Duration').nth(1).selectOption('90');
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
@@ -36,7 +49,7 @@ try {
   await page.getByLabel('Date').last().fill('2026-12-31');
   await page.getByLabel('Group').last().selectOption('Group 2');
   await page.getByRole('button', { name: 'Add service', exact: true }).last().click();
-  await page.getByText('That dog is already scheduled in this group on this date').waitFor();
+  await page.getByText('Bailey already has a Group 2 service on this date. Choose another group or date.').waitFor();
   await page.getByRole('button', { name: 'Close' }).click();
 
   await page.getByRole('link', { name: 'Schedule' }).last().click();

@@ -1,15 +1,21 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
-import type { DogInput, Group, ServiceInput } from "../types";
+import type { DogInput, Group } from "../types";
 import { todayKey } from "../utils/dates";
+import {
+  validateDogForm,
+  type PlannedService,
+} from "../utils/dogFormValidation";
 import {
   Button,
   Card,
   Eyebrow,
+  ErrorSummary,
   Field,
+  FieldError,
   Grid,
   Input,
   Muted,
@@ -24,7 +30,6 @@ import {
   TopRow,
 } from "../styles";
 
-type Planned = Omit<ServiceInput, "dogId"> & { key: string };
 const FormCard = styled(Card)`
   padding: 22px;
   @media (min-width: 700px) {
@@ -43,11 +48,6 @@ const PlannerRow = styled.div`
     align-items: end;
   }
 `;
-const Error = styled.p`
-  color: #a34232;
-  font-size: 13px;
-  margin: 0;
-`;
 const emptyInput: DogInput = {
   name: "",
   address: "",
@@ -58,7 +58,7 @@ const emptyInput: DogInput = {
   accessInstructions: "",
   hourlyRate: 0,
 };
-const newPlan = (): Planned => ({
+const newPlan = (): PlannedService => ({
   key: crypto.randomUUID(),
   date: todayKey(),
   group: "Group 1",
@@ -85,11 +85,20 @@ export const DogFormPage = () => {
       : emptyInput,
   );
   const [rateText, setRateText] = useState(dog?.hourlyRate.toString() ?? "");
-  const [planned, setPlanned] = useState<Planned[]>([]);
-  const [error, setError] = useState("");
+  const [planned, setPlanned] = useState<PlannedService[]>([]);
+  const [attempted, setAttempted] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const validation = validateDogForm(
+    input,
+    rateText,
+    planned,
+    data.services,
+    dog?.id,
+  );
+  const errors: Record<string, string> = attempted ? validation.errors : {};
   const setField = <K extends keyof DogInput>(key: K, value: DogInput[K]) =>
     setInput((current) => ({ ...current, [key]: value }));
-  const setPlan = (key: string, changes: Partial<Planned>) =>
+  const setPlan = (key: string, changes: Partial<PlannedService>) =>
     setPlanned((current) =>
       current.map((item) =>
         item.key === key ? { ...item, ...changes } : item,
@@ -97,42 +106,24 @@ export const DogFormPage = () => {
     );
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const rate = Number(rateText);
-    if (
-      !input.name.trim() ||
-      !input.address.trim() ||
-      !Number.isFinite(rate) ||
-      rate <= 0
-    ) {
-      setError("Enter a dog name, address, and hourly rate greater than €0.");
-      return;
-    }
-    if (planned.some((item) => !item.date || !item.durationMinutes)) {
-      setError("Complete every planned service date and duration.");
-      return;
-    }
-    const keys = planned.map((item) => `${item.date}|${item.group}`);
-    if (
-      new Set(keys).size !== keys.length ||
-      (dog &&
-        planned.some((item) =>
-          data.services.some(
-            (service) =>
-              service.dogId === dog.id &&
-              service.date === item.date &&
-              service.group === item.group &&
-              service.status !== "cancelled",
-          ),
-        ))
-    ) {
-      setError("A dog can only have one active service per group on a date.");
+    setAttempted(true);
+    const firstError = Object.keys(validation.errors)[0];
+    if (firstError) {
+      requestAnimationFrame(() => {
+        const fields = formRef.current?.querySelectorAll<HTMLElement>(
+          "[data-validation-key]",
+        );
+        Array.from(fields ?? [])
+          .find((field) => field.dataset.validationKey === firstError)
+          ?.focus();
+      });
       return;
     }
     const clean = {
       ...input,
       name: input.name.trim(),
       address: input.address.trim(),
-      hourlyRate: rate,
+      hourlyRate: validation.hourlyRate,
       ownerName: input.ownerName.trim(),
       ownerPhone: input.ownerPhone.trim(),
       ownerEmail: input.ownerEmail.trim(),
@@ -166,8 +157,13 @@ export const DogFormPage = () => {
           <ArrowLeft size={16} /> Back
         </Button>
       </TopRow>
-      <form onSubmit={submit}>
+      <form ref={formRef} onSubmit={submit} noValidate>
         <Stack $gap={20}>
+          {Object.keys(errors).length > 0 && (
+            <ErrorSummary role="alert">
+              Please fix {Object.keys(errors).length === 1 ? "the highlighted field" : "the highlighted fields"} before {dog ? "saving changes" : "creating this dog"}.
+            </ErrorSummary>
+          )}
           <FormCard>
             <Stack>
               <SectionTitle>Dog details</SectionTitle>
@@ -179,20 +175,28 @@ export const DogFormPage = () => {
                     value={input.name}
                     onChange={(event) => setField("name", event.target.value)}
                     placeholder="e.g. Bailey"
+                    aria-label="Dog name *"
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={errors.name ? "dog-name-error" : undefined}
+                    data-validation-key="name"
                   />
+                  {errors.name && <FieldError id="dog-name-error">{errors.name}</FieldError>}
                 </Field>
                 <Field>
                   Hourly rate (€) *
                   <Input
                     required
-                    type="number"
-                    min="0.01"
-                    step="0.01"
+                    type="text"
                     inputMode="decimal"
                     value={rateText}
                     onChange={(event) => setRateText(event.target.value)}
                     placeholder="20.00"
+                    aria-label="Hourly rate (€) *"
+                    aria-invalid={Boolean(errors.hourlyRate)}
+                    aria-describedby={errors.hourlyRate ? "dog-rate-error" : undefined}
+                    data-validation-key="hourlyRate"
                   />
+                  {errors.hourlyRate && <FieldError id="dog-rate-error">{errors.hourlyRate}</FieldError>}
                 </Field>
               </Grid>
               <Field>
@@ -202,7 +206,12 @@ export const DogFormPage = () => {
                   value={input.address}
                   onChange={(event) => setField("address", event.target.value)}
                   placeholder="Street, city, postcode"
+                  aria-label="Address *"
+                  aria-invalid={Boolean(errors.address)}
+                  aria-describedby={errors.address ? "dog-address-error" : undefined}
+                  data-validation-key="address"
                 />
+                {errors.address && <FieldError id="dog-address-error">{errors.address}</FieldError>}
               </Field>
             </Stack>
           </FormCard>
@@ -234,10 +243,15 @@ export const DogFormPage = () => {
                   <Input
                     type="email"
                     value={input.ownerEmail}
+                    aria-label="Email"
                     onChange={(event) =>
                       setField("ownerEmail", event.target.value)
                     }
+                    aria-invalid={Boolean(errors.ownerEmail)}
+                    aria-describedby={errors.ownerEmail ? "dog-email-error" : undefined}
+                    data-validation-key="ownerEmail"
                   />
+                  {errors.ownerEmail && <FieldError id="dog-email-error">{errors.ownerEmail}</FieldError>}
                 </Field>
               </Grid>
             </Stack>
@@ -298,17 +312,26 @@ export const DogFormPage = () => {
                         setPlan(item.key, { date: event.target.value })
                       }
                       required
+                      aria-label="Date"
+                      aria-invalid={Boolean(errors[`date:${item.key}`])}
+                      aria-describedby={errors[`date:${item.key}`] ? `plan-date-error-${item.key}` : undefined}
+                      data-validation-key={`date:${item.key}`}
                     />
+                    {errors[`date:${item.key}`] && <FieldError id={`plan-date-error-${item.key}`}>{errors[`date:${item.key}`]}</FieldError>}
                   </Field>
                   <Field>
                     Group
                     <Select
                       value={item.group}
+                      aria-label="Group"
                       onChange={(event) =>
                         setPlan(item.key, {
                           group: event.target.value as Group,
                         })
                       }
+                      aria-invalid={Boolean(errors[`group:${item.key}`])}
+                      aria-describedby={errors[`group:${item.key}`] ? `plan-group-error-${item.key}` : undefined}
+                      data-validation-key={`group:${item.key}`}
                     >
                       {(["Group 1", "Group 2", "Group 3"] as Group[]).map(
                         (group) => (
@@ -316,16 +339,21 @@ export const DogFormPage = () => {
                         ),
                       )}
                     </Select>
+                    {errors[`group:${item.key}`] && <FieldError id={`plan-group-error-${item.key}`}>{errors[`group:${item.key}`]}</FieldError>}
                   </Field>
                   <Field>
                     Duration
                     <Select
                       value={item.durationMinutes}
+                      aria-label="Duration"
                       onChange={(event) =>
                         setPlan(item.key, {
                           durationMinutes: Number(event.target.value),
                         })
                       }
+                      aria-invalid={Boolean(errors[`duration:${item.key}`])}
+                      aria-describedby={errors[`duration:${item.key}`] ? `plan-duration-error-${item.key}` : undefined}
+                      data-validation-key={`duration:${item.key}`}
                     >
                       {Array.from(
                         { length: 48 },
@@ -336,6 +364,7 @@ export const DogFormPage = () => {
                         </option>
                       ))}
                     </Select>
+                    {errors[`duration:${item.key}`] && <FieldError id={`plan-duration-error-${item.key}`}>{errors[`duration:${item.key}`]}</FieldError>}
                   </Field>
                   <Button
                     type="button"
@@ -353,7 +382,6 @@ export const DogFormPage = () => {
               ))}
             </Stack>
           </FormCard>
-          {error && <Error role="alert">{error}</Error>}
           <Row style={{ justifyContent: "flex-end" }}>
             <Button
               type="button"

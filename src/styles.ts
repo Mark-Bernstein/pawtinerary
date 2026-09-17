@@ -137,6 +137,21 @@ export const Field = styled.label`
   font-size: 12px;
   color: #42594a;
 `;
+export const FieldError = styled.span`
+  color: #a34232;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+`;
+export const ErrorSummary = styled.div`
+  border: 1px solid #edb9ad;
+  background: #fff4f0;
+  color: #923c2f;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-size: 13px;
+  font-weight: 700;
+`;
 export const Input = styled.input`
   width: 100%;
   min-height: 45px;
@@ -149,6 +164,13 @@ export const Input = styled.input`
   &:focus {
     border-color: #6b9a79;
     box-shadow: 0 0 0 3px #e0eee2;
+  }
+  &[aria-invalid="true"] {
+    border-color: #bc4939;
+    background: #fffaf8;
+  }
+  &[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 3px #f7d9d2;
   }
 `;
 export const Select = styled.select`
@@ -163,6 +185,13 @@ export const Select = styled.select`
   &:focus {
     border-color: #6b9a79;
     box-shadow: 0 0 0 3px #e0eee2;
+  }
+  &[aria-invalid="true"] {
+    border-color: #bc4939;
+    background: #fffaf8;
+  }
+  &[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 3px #f7d9d2;
   }
 `;
 export const Textarea = styled.textarea`

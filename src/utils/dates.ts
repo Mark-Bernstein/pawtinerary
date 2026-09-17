@@ -6,12 +6,18 @@ import {
   format,
   isSameDay,
   isSameMonth,
+  isValid,
   parseISO,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
 
 export const dateKey = (date: Date) => format(date, "yyyy-MM-dd");
+export const isValidDateKey = (key: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return false;
+  const parsed = parseISO(key);
+  return isValid(parsed) && dateKey(parsed) === key;
+};
 export const fromKey = (key: string) => parseISO(`${key}T12:00:00`);
 export const todayKey = () => dateKey(new Date());
 export const weekStart = (date: Date) => startOfWeek(date, { weekStartsOn: 1 });
