@@ -24,17 +24,22 @@ const Keys = styled.div`
   gap: 9px;
   margin-top: 16px;
 `;
-const Key = styled.button<{ $accent?: boolean; $wide?: boolean }>`
-  min-height: 58px;
+const Key = styled.button<{
+  $accent?: boolean;
+  $symbol?: boolean;
+  $wide?: boolean;
+}>`
+  min-height: 62px;
   border: 0;
   border-radius: 14px;
   background: ${({ $accent }) =>
     $accent ? "var(--accent)" : "var(--surface-tint)"};
   color: ${({ $accent }) =>
     $accent ? "var(--on-accent)" : "var(--accent-text)"};
-  font:
-    700 19px Outfit,
-    sans-serif;
+  font-family: Outfit, sans-serif;
+  font-size: ${({ $symbol }) => ($symbol ? "32px" : "26px")};
+  font-weight: 700;
+  line-height: 1;
   grid-column: ${({ $wide }) => ($wide ? "span 2" : "auto")};
   &:hover {
     filter: brightness(0.96);
@@ -131,6 +136,7 @@ export const Calculator = ({ onClose }: { onClose: () => void }) => {
           <Key
             key={value}
             $accent={value === "=" || ["+", "−", "×", "÷"].includes(value)}
+            $symbol={["⌫", "÷", "×", "−", "+", "="].includes(value)}
             $wide={value === "0"}
             onClick={() => press(value)}
             aria-label={
