@@ -44,9 +44,16 @@ const PlannerRow = styled.div`
   padding: 14px;
   border: 1px solid var(--border-soft);
   border-radius: 15px;
+  > button {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
   @media (min-width: 650px) {
-    grid-template-columns: 1.4fr 1fr 1fr auto;
+    grid-template-columns: 1.4fr 1fr auto;
     align-items: end;
+    > button {
+      grid-column: auto;
+    }
   }
 `;
 const emptyInput: DogInput = {
@@ -63,13 +70,12 @@ const newPlan = (): PlannedService => ({
   key: crypto.randomUUID(),
   date: todayKey(),
   group: "Group 1",
-  durationMinutes: 60,
 });
 
 export const DogFormPage = () => {
   const { id } = useParams();
   const { data, addDog, updateDog } = useApp();
-  const { t, language, group: groupLabel, durationOption } = useLanguage();
+  const { t, language, group: groupLabel } = useLanguage();
   const navigate = useNavigate();
   const dog = data.dogs.find((item) => item.id === id);
   const [input, setInput] = useState<DogInput>(() =>
@@ -392,39 +398,6 @@ export const DogFormPage = () => {
                     {errors[`group:${item.key}`] && (
                       <FieldError id={`plan-group-error-${item.key}`}>
                         {errors[`group:${item.key}`]}
-                      </FieldError>
-                    )}
-                  </Field>
-                  <Field>
-                    {t("Duration")}
-                    <Select
-                      value={item.durationMinutes}
-                      aria-label={t("Duration")}
-                      onChange={(event) =>
-                        setPlan(item.key, {
-                          durationMinutes: Number(event.target.value),
-                        })
-                      }
-                      aria-invalid={Boolean(errors[`duration:${item.key}`])}
-                      aria-describedby={
-                        errors[`duration:${item.key}`]
-                          ? `plan-duration-error-${item.key}`
-                          : undefined
-                      }
-                      data-validation-key={`duration:${item.key}`}
-                    >
-                      {Array.from(
-                        { length: 48 },
-                        (_, index) => (index + 1) * 15,
-                      ).map((minutes) => (
-                        <option key={minutes} value={minutes}>
-                          {durationOption(minutes)}
-                        </option>
-                      ))}
-                    </Select>
-                    {errors[`duration:${item.key}`] && (
-                      <FieldError id={`plan-duration-error-${item.key}`}>
-                        {errors[`duration:${item.key}`]}
                       </FieldError>
                     )}
                   </Field>

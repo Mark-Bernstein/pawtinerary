@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Check,
-  Clock3,
   MoreHorizontal,
   Pencil,
   RotateCcw,
@@ -11,7 +10,6 @@ import {
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
 import type { Dog, Service } from "../types";
-import { serviceAmount } from "../utils/earnings";
 import { useLanguage } from "../i18n/LanguageContext";
 import { Badge, Button, Card, Muted, Row } from "../styles";
 import { ServiceFormModal } from "./ServiceFormModal";
@@ -63,7 +61,7 @@ export const ServiceCard = ({
   showGroup?: boolean;
 }) => {
   const { setServiceStatus } = useApp();
-  const { t, money, duration, group, status } = useLanguage();
+  const { t, group, status } = useLanguage();
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(false);
   return (
@@ -71,15 +69,10 @@ export const ServiceCard = ({
       <Wrap>
         <Avatar aria-hidden="true">{dog.name.charAt(0).toUpperCase()}</Avatar>
         <Body>
-          <Row style={{ justifyContent: "space-between", gap: 5 }}>
+          <Row style={{ gap: 5 }}>
             <Name to={`/dogs/${dog.id}`}>{dog.name}</Name>
-            <strong>{money(serviceAmount(service, dog))}</strong>
           </Row>
           <Row style={{ marginTop: 6, gap: 8 }}>
-            <Muted>
-              <Clock3 size={12} style={{ verticalAlign: -2 }} />{" "}
-              {duration(service.durationMinutes)}
-            </Muted>
             {showGroup && <Muted>{group(service.group)}</Muted>}
             <Badge
               $tone={

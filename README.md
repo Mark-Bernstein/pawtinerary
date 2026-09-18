@@ -1,6 +1,6 @@
 # Pawtinerary
 
-A mobile-first work planner for a solo dog walker. Manage dog and client details, schedule individual services, mark visits complete, track Euro earnings, and export local reports.
+A mobile-first work planner for a solo dog walker. Manage dog and client details, schedule individual services, mark visits complete, and export local reports.
 
 ## Run locally
 
@@ -20,7 +20,7 @@ For a browser smoke test, start the development server in one terminal and run `
 
 ## Deploying with direct links
 
-The app uses clean paths such as `/dogs` and `/earnings`. On a direct visit or refresh, the hosting server must serve `index.html` with HTTP 200 for app paths while leaving the URL unchanged; React Router then renders the requested page. Vite development and preview servers already do this.
+The app uses clean paths such as `/dogs` and `/dogs/new`. On a direct visit or refresh, the hosting server must serve `index.html` with HTTP 200 for app paths while leaving the URL unchanged; React Router then renders the requested page. Vite development and preview servers already do this.
 
 For the Vercel deployment, `vercel.json` provides this rewrite. Set the build command to `npm run build` and the output directory to `dist`. Other static hosts need an equivalent fallback rewrite to `index.html`; a redirect to `/` would lose the current page.
 
@@ -30,23 +30,23 @@ After deployment, open `/dogs` directly in a new tab and refresh it. Both reques
 
 React, TypeScript, Vite, styled-components, React Router, date-fns, docx, and Vitest. The app has no backend or account system.
 
-- `src/pages`: Schedule, Dogs, dog profile and form, and Earnings screens.
+- `src/pages`: Schedule, Dogs, dog profile, and dog form screens.
 - `src/components`: service controls, dialogs, calculator, report export, and reusable cards.
 - `src/context/AppContext.tsx`: domain actions and app state.
 - `src/i18n`: English, Spanish, and Catalan wording, locale formatting, and language preference.
 - `src/theme`: Dark, Light, and Dog Mode selection and persistence.
 - `src/storage/data.ts`: versioned browser storage parsing and writing.
-- `src/utils`: date, currency, earnings, and report logic.
+- `src/utils`: date, form validation, and report logic.
 
-## Data and calculations
+## Data and scheduling
 
-The browser stores `{ version: 1, dogs, services }` under `pawtinerary.data.v1` in `localStorage`. Changes persist automatically after add, edit, completion, cancellation, or deletion. The selected language is stored separately under `pawtinerary.language.v1` and defaults to English. The selected theme is stored under `pawtinerary.theme.v1` and defaults to Dark Mode. Light Mode keeps the original palette; Dog Mode adds a warm palette, paw and bone pattern, and playful card styling. The schedule view selection uses `sessionStorage`.
+The browser stores `{ version: 2, dogs, services }` under `pawtinerary.data.v2` in `localStorage`. Existing version 1 records are loaded automatically, then saved in version 2 format without duration or earnings snapshot values. Changes persist automatically after add, edit, completion, cancellation, or deletion. The selected language is stored separately under `pawtinerary.language.v1` and defaults to English. The selected theme is stored under `pawtinerary.theme.v1` and defaults to Dark Mode. Light Mode keeps the original palette; Dog Mode adds a warm palette, paw and bone pattern, and playful card styling. The schedule view selection uses `sessionStorage`.
 
-Each service belongs to one dog, date, and group, with duration in minutes. Scheduled services count toward **potential** earnings. Completed services count toward **earned** earnings. Cancelled services count toward neither. On completion, the dog's hourly rate is copied to the service, keeping historical earned amounts stable when the dog's rate changes. Scheduled services use the current rate. Deleting a dog also deletes every associated service.
+Each service belongs to one dog, date, and group, and can be scheduled, completed, or cancelled. The Today schedule shows a numbered list of dogs with scheduled services under each group heading, above the detailed cards. The hourly rate remains on each dog profile as reference information; the app does not calculate earnings or service amounts. Deleting a dog also deletes every associated service. Existing version 1 duration and completed rate snapshot values are dropped during migration.
 
 ## Reports
 
-Send Data creates a DOCX file in the browser for a selected day, week, month, or lifetime. It also offers plain text copy and file sharing when the device supports the Web Share API. Reports use the currently selected language and include dogs, client names when available, services, amounts, and totals. Entry and access instructions are never included. No email is sent by the app.
+Send Data creates a DOCX file in the browser for a selected day, week, month, or lifetime. It also offers plain text copy and file sharing when the device supports the Web Share API. Reports use the currently selected language and include dogs, client names when available, service dates, groups, and statuses. Entry and access instructions are never included. No email is sent by the app.
 
 ## Sharing the app
 

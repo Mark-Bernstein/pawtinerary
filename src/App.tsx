@@ -10,7 +10,6 @@ import {
 import {
   CalendarDays,
   Calculator as CalculatorIcon,
-  ChartNoAxesCombined,
   Dog,
   FileUp,
   Languages,
@@ -28,7 +27,6 @@ import { SchedulePage } from "./pages/SchedulePage";
 import { DogsPage } from "./pages/DogsPage";
 import { DogDetailPage } from "./pages/DogDetailPage";
 import { DogFormPage } from "./pages/DogFormPage";
-import { EarningsPage } from "./pages/EarningsPage";
 import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
 import { LanguageModal } from "./components/LanguageModal";
 import { ThemeModal } from "./components/ThemeModal";
@@ -142,7 +140,7 @@ const MobileNav = styled.nav`
   left: 0;
   right: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   background: var(--surface);
   border-top: 1px solid var(--border-soft);
   padding: 7px 10px calc(7px + env(safe-area-inset-bottom));
@@ -189,7 +187,6 @@ const Toast = styled.div`
 const navItems = [
   { to: "/", title: "Schedule", Icon: CalendarDays },
   { to: "/dogs", title: "Dogs", Icon: Dog },
-  { to: "/earnings", title: "Earnings", Icon: ChartNoAxesCombined },
 ] as const;
 
 const Shell = () => {
@@ -267,7 +264,7 @@ const Shell = () => {
           }
         />
         <Route path="/dogs/:id/edit" element={<DogFormPage />} />
-        <Route path="/earnings" element={<EarningsPage />} />
+        <Route path="/earnings" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <MobileNav aria-label={t("Mobile navigation")}>

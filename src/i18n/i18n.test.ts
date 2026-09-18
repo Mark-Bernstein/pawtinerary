@@ -18,14 +18,15 @@ describe("language support", () => {
 
   it("generates report wording in the selected language without access instructions", () => {
     const dog: Dog = { id: "dog", name: "Bailey", address: "Street", ownerName: "Pat", ownerPhone: "", ownerEmail: "", notes: "", accessInstructions: "PRIVATE-CODE", hourlyRate: 20, createdAt: "", updatedAt: "" };
-    const service: Service = { id: "service", dogId: dog.id, date: "2026-09-17", group: "Group 1", durationMinutes: 60, status: "completed", completedHourlyRate: 20, createdAt: "", updatedAt: "" };
+    const service: Service = { id: "service", dogId: dog.id, date: "2026-09-17", group: "Group 1", status: "completed", createdAt: "", updatedAt: "" };
     const base = { period: "day" as const, anchor: new Date(2026, 8, 17, 12), dogs: [dog], services: [service] };
     const spanish = reportText({ ...base, language: "es" });
     const catalan = reportText({ ...base, language: "ca" });
     expect(spanish).toContain("Grupo 1");
-    expect(spanish).toContain("Ganado:");
+    expect(spanish).toContain("completado");
     expect(catalan).toContain("Grup 1");
-    expect(catalan).toContain("Guanyat:");
+    expect(catalan).toContain("completat");
+    expect(spanish + catalan).not.toContain("20,00");
     expect(spanish + catalan).not.toContain("PRIVATE-CODE");
     expect(reportFileName("month", base.anchor, "ca")).toBe("Pawtinerary-Mes-2026-09.docx");
   });

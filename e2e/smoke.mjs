@@ -76,16 +76,24 @@ try {
   await page.getByLabel('Entry / access instructions').fill('PRIVATE-CODE-123');
   await page.getByRole('button', { name: 'Add date' }).click();
   await page.getByRole('button', { name: 'Add date' }).click();
+  assert.equal(await page.getByLabel('Duration').count(), 0);
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
   await page.getByText('Group 1 is already planned for this date.').waitFor();
   await page.getByLabel('Group').nth(1).selectOption('Group 3');
-  await page.getByLabel('Duration').nth(1).selectOption('90');
   await page.getByText('Group 1 is already planned for this date.').waitFor({ state: 'hidden' });
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
-  await page.getByText('Earnings for Bailey').waitFor();
-  assert.equal(await page.getByText('€50.00').count() > 0, true);
+  await page.getByText('Scheduled services').waitFor();
+  assert.equal(await page.getByText('€50.00').count(), 0);
+
+  await page.getByRole('button', { name: 'More' }).first().click();
+  await page.getByRole('button', { name: 'Edit', exact: true }).first().click();
+  const editService = page.getByRole('dialog', { name: 'Edit service' });
+  await editService.waitFor();
+  assert.equal(await editService.getByLabel('Duration').count(), 0);
+  await editService.getByRole('button', { name: 'Close' }).click();
 
   await page.getByRole('button', { name: 'Add Service' }).first().click();
+  assert.equal(await page.getByRole('dialog', { name: 'Add service' }).getByLabel('Duration').count(), 0);
   await page.getByLabel('Date').last().fill('2026-12-31');
   await page.getByLabel('Group').last().selectOption('Group 2');
   await page.getByRole('button', { name: 'Add service', exact: true }).last().click();
@@ -98,18 +106,22 @@ try {
 
   await page.getByRole('link', { name: 'Schedule' }).last().click();
   await page.getByText('Group 1').first().waitFor();
+  assert.deepEqual(await page.getByRole('list', { name: 'Group 1: Dogs to visit' }).locator('li').allTextContents(), ['Bailey']);
+  assert.deepEqual(await page.getByRole('list', { name: 'Group 3: Dogs to visit' }).locator('li').allTextContents(), ['Bailey']);
   assert.equal(await page.getByText('Bailey').count() >= 2, true);
   if (screenshots) { await page.waitForTimeout(3600); await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: '/private/tmp/pawtinerary-mobile.png', fullPage: true }); }
   await page.getByRole('button', { name: 'Complete' }).first().click();
+  assert.equal(await page.getByRole('list', { name: 'Group 1: Dogs to visit' }).count(), 0);
+  assert.deepEqual(await page.getByRole('list', { name: 'Group 3: Dogs to visit' }).locator('li').allTextContents(), ['Bailey']);
   await page.getByRole('link', { name: 'Bailey' }).first().click();
-  await page.getByText('Earnings for Bailey').waitFor();
-  assert.equal(await page.getByText('€30.00').count() > 0, true);
+  await page.getByText('Completed history').waitFor();
+  assert.equal(await page.getByText('€20.00').count() > 0, true);
 
   await page.getByRole('link', { name: 'Edit Info' }).click();
   await page.getByLabel('Hourly rate (€) *').fill('25');
   await page.getByRole('button', { name: 'Save changes' }).click();
-  await page.getByText('€37.50').first().waitFor();
-  assert.equal(await page.getByText('€20.00').count() > 0, true);
+  await page.getByText('€25.00').first().waitFor();
+  assert.equal(await page.getByText('€20.00').count(), 0);
   await page.getByRole('button', { name: /1 Main Street, Dublin/ }).click();
   await page.getByText('Address copied!').waitFor();
 
@@ -117,8 +129,9 @@ try {
   await page.getByLabel('Report period').selectOption('day');
   await page.getByRole('button', { name: 'Copy Report Text' }).click();
   const reportText = await page.evaluate(() => navigator.clipboard.readText());
-  assert(reportText.includes('Earned: €20.00'));
-  assert(reportText.includes('Potential: €37.50'));
+  assert(reportText.includes('Bailey'));
+  assert(reportText.includes('completed'));
+  assert(!reportText.includes('€'));
   assert(!reportText.includes('PRIVATE-CODE-123'));
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download DOCX' }).click();
@@ -129,31 +142,32 @@ try {
   assert.equal(bytes.subarray(0, 2).toString(), 'PK');
   const documentXml = execFileSync('unzip', ['-p', await download.path(), 'word/document.xml'], { encoding: 'utf8' });
   assert(documentXml.includes('Bailey'));
+  assert(!documentXml.includes('€'));
   assert(!documentXml.includes('PRIVATE-CODE-123'));
   await page.getByRole('button', { name: 'Close' }).click();
 
   await page.reload();
-  await page.getByRole('link', { name: 'Earnings' }).last().click();
-  await page.getByText('€37.50').first().waitFor();
+  await page.getByText('€25.00').first().waitFor();
+  assert.equal(await page.getByRole('link', { name: 'Earnings' }).count(), 0);
   await page.getByRole('button', { name: 'Open calculator' }).click();
   for (const key of ['2', '0', '+', '5', '=']) await page.getByRole('button', { name: key, exact: true }).click();
   await page.getByText('25', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Close' }).click();
   await page.getByRole('link', { name: 'Schedule' }).last().click();
   await page.getByRole('tab', { name: 'Week' }).click();
-  await page.getByText('THIS WEEK · EARNED').waitFor();
+  await page.getByText('Bailey').first().waitFor();
   await page.getByRole('tab', { name: 'Month' }).click();
-  await page.getByText('THIS MONTH · EARNED').waitFor();
+  assert.equal(await page.getByRole('tab', { name: 'Month' }).getAttribute('aria-selected'), 'true');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
 
   await page.getByRole('link', { name: 'Dogs' }).last().click();
   await page.getByText('Bailey').first().click();
   await page.getByRole('button', { name: 'Delete Dog' }).click();
   await page.getByRole('button', { name: 'Cancel' }).click();
-  await page.getByText('Earnings for Bailey').waitFor();
+  await page.getByText('Scheduled services').waitFor();
   await page.getByRole('button', { name: 'Delete Dog' }).click();
   await page.getByRole('button', { name: 'Delete', exact: true }).click();
-  await page.getByText('Are you sure? Deleting this dog will remove all earnings from your data.').waitFor();
+  await page.getByText('Are you sure? Deleting this dog will remove all associated services.').waitFor();
   await page.getByRole('button', { name: 'Delete Dog' }).last().click();
   await page.getByText('No dogs yet. Create your first dog to get started.').waitFor();
   await page.reload();
@@ -206,6 +220,50 @@ try {
   await page.getByRole('link', { name: 'Schedule' }).last().waitFor();
   assert.equal(await page.locator('html').getAttribute('lang'), 'en');
   assert.deepEqual(errors, []);
+
+  const legacyContext = await browser.newContext();
+  try {
+    const legacyPage = await legacyContext.newPage();
+    await legacyPage.goto(base);
+    await legacyPage.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
+    await legacyPage.evaluate(() => {
+      const today = new Date();
+      const key = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      localStorage.removeItem('pawtinerary.data.v2');
+      localStorage.setItem('pawtinerary.data.v1', JSON.stringify({
+        version: 1,
+        dogs: [
+          { id: 'legacy-dog', name: 'Legacy Dog', address: '1 Main Street', hourlyRate: 20 },
+          { id: 'second-dog', name: 'Second Dog', address: '2 Main Street', hourlyRate: 22 },
+        ],
+        services: [
+          { id: 'long', dogId: 'legacy-dog', date: key, group: 'Group 1', durationMinutes: 90, status: 'scheduled' },
+          { id: 'second', dogId: 'second-dog', date: key, group: 'Group 1', durationMinutes: 60, status: 'scheduled' },
+          { id: 'short', dogId: 'legacy-dog', date: key, group: 'Group 2', durationMinutes: 30, status: 'completed', completedHourlyRate: 18 },
+        ],
+      }));
+    });
+    await legacyPage.goto(new URL('/dogs/legacy-dog', base).toString());
+    await legacyPage.getByText('Scheduled services').waitFor();
+    assert(await legacyPage.getByText('€20.00').count() > 0);
+    assert.equal(await legacyPage.getByText('€18.00').count(), 0);
+    await legacyPage.waitForFunction(() => localStorage.getItem('pawtinerary.data.v2') !== null);
+    const migrated = await legacyPage.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')));
+    assert.equal(migrated.version, 2);
+    assert.equal(migrated.dogs.length, 2);
+    assert.equal(migrated.services.length, 3);
+    assert(migrated.services.every(service => !('durationMinutes' in service)));
+    assert(migrated.services.every(service => !('completedHourlyRate' in service)));
+    await legacyPage.reload();
+    await legacyPage.getByText('Completed history').waitFor();
+    await legacyPage.goto(base);
+    const groupList = legacyPage.getByRole('list', { name: 'Group 1: Dogs to visit' });
+    await groupList.waitFor();
+    assert.deepEqual(await groupList.locator('li').allTextContents(), ['Legacy Dog', 'Second Dog']);
+    assert.equal(await legacyPage.getByRole('list', { name: 'Group 2: Dogs to visit' }).count(), 0);
+  } finally {
+    await legacyContext.close();
+  }
   console.log('Pawtinerary mobile and desktop smoke workflows passed.');
 } finally {
   await browser.close();

@@ -44,14 +44,6 @@ export const formatLocalizedDay = (key: string, language: Language) =>
   formatLocalizedDate(fromKey(key), "EEE, d MMM yyyy", language);
 export const formatLocalizedShortDay = (key: string, language: Language) =>
   formatLocalizedDate(fromKey(key), "d MMM yyyy", language);
-export const formatDuration = (minutes: number, language: Language) => {
-  const hours = formatNumber(minutes / 60, language);
-  return language === "en"
-    ? `${hours} ${minutes === 60 ? "hr" : "hrs"}`
-    : `${hours} h`;
-};
-export const formatDurationOption = (minutes: number, language: Language) =>
-  `${formatNumber(minutes / 60, language)} ${translate(language, minutes === 60 ? "hour" : "hours")}`;
 export const formatGroup = (group: Group, language: Language) =>
   translate(language, group);
 export const formatStatus = (status: ServiceStatus, language: Language) =>
@@ -66,8 +58,6 @@ interface LanguageValue {
   date: (date: Date, pattern: string) => string;
   day: (key: string) => string;
   shortDay: (key: string) => string;
-  duration: (minutes: number) => string;
-  durationOption: (minutes: number) => string;
   group: (group: Group) => string;
   status: (status: ServiceStatus) => string;
 }
@@ -101,8 +91,6 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       date: (date, pattern) => formatLocalizedDate(date, pattern, language),
       day: (key) => formatLocalizedDay(key, language),
       shortDay: (key) => formatLocalizedShortDay(key, language),
-      duration: (minutes) => formatDuration(minutes, language),
-      durationOption: (minutes) => formatDurationOption(minutes, language),
       group: (group) => formatGroup(group, language),
       status: (status) => formatStatus(status, language),
     }),

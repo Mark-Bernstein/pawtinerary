@@ -169,14 +169,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           ...current,
           services: current.services.map((service) => {
             if (service.id !== id) return service;
-            const dog = current.dogs.find((item) => item.id === service.dogId);
             return {
               ...service,
               status,
-              completedHourlyRate:
-                status === "completed"
-                  ? (service.completedHourlyRate ?? dog?.hourlyRate)
-                  : undefined,
               updatedAt: stamp(),
             };
           }),

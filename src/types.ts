@@ -20,15 +20,13 @@ export interface Service {
   dogId: string;
   date: string;
   group: Group;
-  durationMinutes: number;
   status: ServiceStatus;
-  completedHourlyRate?: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface PawtineraryData {
-  version: 1;
+  version: 2;
   dogs: Dog[];
   services: Service[];
 }
@@ -44,8 +42,5 @@ export type DogInput = Pick<
   | "accessInstructions"
   | "hourlyRate"
 >;
-export type ServiceInput = Pick<
-  Service,
-  "dogId" | "date" | "group" | "durationMinutes"
->;
+export type ServiceInput = Pick<Service, "dogId" | "date" | "group">;
 export type Period = "day" | "week" | "month" | "lifetime";

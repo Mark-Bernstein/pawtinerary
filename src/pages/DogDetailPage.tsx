@@ -15,7 +15,6 @@ import { useApp } from "../context/AppContext";
 import { useLanguage } from "../i18n/LanguageContext";
 import type { Service } from "../types";
 import { todayKey } from "../utils/dates";
-import { getTotals } from "../utils/earnings";
 import {
   Badge,
   Button,
@@ -31,7 +30,6 @@ import {
   Title,
   TopRow,
 } from "../styles";
-import { EarningsCard } from "../components/EarningsCard";
 import { EmptyState } from "../components/EmptyState";
 import { Modal } from "../components/Modal";
 import { ServiceCard } from "../components/ServiceCard";
@@ -207,29 +205,6 @@ export const DogDetailPage = ({
           </div>
         </InfoCard>
       </Grid>
-      <Stack $gap={15} style={{ marginBottom: 30 }}>
-        <SectionTitle>
-          {t("Earnings for {dog}", { dog: dog.name })}
-        </SectionTitle>
-        <Grid>
-          <EarningsCard
-            title={t("Today")}
-            totals={getTotals(services, [dog], "day", new Date())}
-          />
-          <EarningsCard
-            title={t("This Week")}
-            totals={getTotals(services, [dog], "week", new Date())}
-          />
-          <EarningsCard
-            title={t("This Month")}
-            totals={getTotals(services, [dog], "month", new Date())}
-          />
-          <EarningsCard
-            title={t("Lifetime")}
-            totals={getTotals(services, [dog])}
-          />
-        </Grid>
-      </Stack>
       <Stack $gap={25}>
         <ServiceSection>
           <Row style={{ justifyContent: "space-between" }}>
@@ -307,7 +282,7 @@ export const DogDetailPage = ({
               }}
             >
               {t(
-                "Are you sure? Deleting this dog will remove all earnings from your data.",
+                "Are you sure? Deleting this dog will remove all associated services.",
               )}
             </p>
             <Row style={{ justifyContent: "flex-end" }}>

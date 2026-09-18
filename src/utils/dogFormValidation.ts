@@ -51,7 +51,6 @@ export const validateDogForm = (
   for (const item of planned) {
     const dateField = `date:${item.key}`;
     const groupField = `group:${item.key}`;
-    const durationField = `duration:${item.key}`;
     if (!item.date)
       errors[dateField] = translate(language, "Choose a service date.");
     else if (!isValidDateKey(item.date))
@@ -61,17 +60,6 @@ export const validateDogForm = (
         language,
         "Choose Group 1, Group 2, or Group 3.",
       );
-    if (
-      !Number.isFinite(item.durationMinutes) ||
-      item.durationMinutes < 15 ||
-      item.durationMinutes > 720 ||
-      item.durationMinutes % 15 !== 0
-    )
-      errors[durationField] = translate(
-        language,
-        "Choose a duration in 15-minute increments.",
-      );
-
     if (!errors[dateField] && !errors[groupField]) {
       const combination = `${item.date}|${item.group}`;
       if (seen.has(combination))

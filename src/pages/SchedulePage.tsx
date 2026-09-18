@@ -15,7 +15,6 @@ import {
   weekEnd,
   weekStart,
 } from "../utils/dates";
-import { getTotals } from "../utils/earnings";
 import {
   Badge,
   Button,
@@ -90,6 +89,24 @@ const GroupWrap = styled.section`
   display: grid;
   gap: 10px;
 `;
+const GroupDogList = styled.ol`
+  margin: 0 0 4px;
+  padding: 12px 16px 12px 38px;
+  border: 1px solid var(--border-soft);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  li + li {
+    margin-top: 3px;
+  }
+  li::marker {
+    color: var(--accent-text);
+    font-weight: 800;
+  }
+`;
 const DayCard = styled(Card)`
   padding: 16px;
   min-height: 145px;
@@ -138,26 +155,6 @@ const CalendarDay = styled.button<{ $outside: boolean; $today: boolean }>`
     border-color: var(--accent-border);
   }
 `;
-const Summary = styled(Card)`
-  padding: 18px 20px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: var(--summary);
-  color: var(--summary-text);
-  span {
-    color: var(--summary-muted);
-    display: block;
-    font-size: 12px;
-    margin-bottom: 4px;
-  }
-  strong {
-    font:
-      700 22px Outfit,
-      sans-serif;
-  }
-`;
 
 export const SchedulePage = ({
   onAdd,
@@ -169,7 +166,6 @@ export const SchedulePage = ({
   const { data } = useApp();
   const {
     t,
-    money,
     date,
     day: localizedDay,
     group: groupLabel,
@@ -200,8 +196,6 @@ export const SchedulePage = ({
         />
       ) : null;
     });
-  const period = view === "today" ? "day" : view;
-  const totals = getTotals(data.services, data.dogs, period, anchor);
   const periodLabel =
     view === "today"
       ? localizedDay(selectedDate)
@@ -273,38 +267,17 @@ export const SchedulePage = ({
           {t("Today")}
         </Button>
       </NavBar>
-      {view !== "today" && (
-        <Summary style={{ marginBottom: 22 }}>
-          <div>
-            <span>
-              {t(view === "week" ? "THIS WEEK" : "THIS MONTH")} ·{" "}
-              {t("Earned").toUpperCase()}
-            </span>
-            <strong>{money(totals.earned)}</strong>
-          </div>
-          <div>
-            <span>{t("Potential").toUpperCase()}</span>
-            <strong>{money(totals.potential)}</strong>
-          </div>
-        </Summary>
-      )}
       {view === "today" && (
         <>
-          <Summary style={{ marginBottom: 24 }}>
-            <div>
-              <span>{t("DAY EARNED")}</span>
-              <strong>{money(totals.earned)}</strong>
-            </div>
-            <div>
-              <span>{t("DAY POTENTIAL")}</span>
-              <strong>{money(totals.potential)}</strong>
-            </div>
-          </Summary>
           <Grid $min={300}>
             {groups.map((group) => {
               const items = visibleServices(selectedDate).filter(
                 (item) => item.group === group,
               );
+              const scheduledDogs = items
+                .filter((item) => item.status === "scheduled")
+                .map((item) => data.dogs.find((dog) => dog.id === item.dogId))
+                .filter((dog) => dog !== undefined);
               return (
                 <GroupWrap key={group}>
                   <GroupHead>
@@ -314,6 +287,13 @@ export const SchedulePage = ({
                       {t(items.length === 1 ? "service" : "services")}
                     </Badge>
                   </GroupHead>
+                  {scheduledDogs.length > 0 && (
+                    <GroupDogList aria-label={`${groupLabel(group)}: ${t("Dogs to visit")}`}>
+                      {scheduledDogs.map((dog) => (
+                        <li key={dog.id}>{dog.name}</li>
+                      ))}
+                    </GroupDogList>
+                  )}
                   {items.length ? (
                     renderServices(items)
                   ) : (
@@ -429,7 +409,7 @@ export const SchedulePage = ({
           <EmptyState
             title={t("No dogs yet. Create your first dog to get started.")}
             description={t(
-              "Add a profile, then plan individual walks and see your earnings here.",
+              "Add a profile, then plan individual walks here.",
             )}
             action={
               <Button $variant="primary" onClick={onCreate}>

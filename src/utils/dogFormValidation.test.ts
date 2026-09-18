@@ -16,7 +16,6 @@ const planned = (key: string, group: PlannedService["group"] = "Group 1"): Plann
   key,
   date: "2026-09-17",
   group,
-  durationMinutes: 60,
 });
 
 describe("dog form validation", () => {
@@ -49,7 +48,7 @@ describe("dog form validation", () => {
   });
 
   it("points to a group already scheduled for the edited dog", () => {
-    const existing: Service = { id: "visit", dogId: "bailey", date: "2026-09-17", group: "Group 1", durationMinutes: 60, status: "scheduled", createdAt: "", updatedAt: "" };
+    const existing: Service = { id: "visit", dogId: "bailey", date: "2026-09-17", group: "Group 1", status: "scheduled", createdAt: "", updatedAt: "" };
     const result = validateDogForm(dog, "20", [planned("again")], [existing], "bailey");
     expect(result.errors["group:again"]).toContain("already has a service");
   });

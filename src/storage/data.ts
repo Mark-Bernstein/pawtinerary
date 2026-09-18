@@ -1,9 +1,10 @@
 import type { Dog, PawtineraryData, Service } from "../types";
 import { format, isValid, parseISO } from "date-fns";
 
-export const STORAGE_KEY = "pawtinerary.data.v1";
+export const STORAGE_KEY = "pawtinerary.data.v2";
+const LEGACY_STORAGE_KEY = "pawtinerary.data.v1";
 export const emptyData = (): PawtineraryData => ({
-  version: 1,
+  version: 2,
   dogs: [],
   services: [],
 });
@@ -31,14 +32,7 @@ const validService = (value: unknown): value is Service => {
     isValid(parsedDate) &&
     format(parsedDate, "yyyy-MM-dd") === service.date &&
     ["Group 1", "Group 2", "Group 3"].includes(String(service.group)) &&
-    typeof service.durationMinutes === "number" &&
-    Number.isFinite(service.durationMinutes) &&
-    service.durationMinutes > 0 &&
-    ["scheduled", "completed", "cancelled"].includes(String(service.status)) &&
-    (service.completedHourlyRate === undefined ||
-      (typeof service.completedHourlyRate === "number" &&
-        Number.isFinite(service.completedHourlyRate) &&
-        service.completedHourlyRate > 0))
+    ["scheduled", "completed", "cancelled"].includes(String(service.status))
   );
 };
 export const parseData = (raw: string | null): PawtineraryData => {
@@ -48,7 +42,7 @@ export const parseData = (raw: string | null): PawtineraryData => {
     if (!parsed || typeof parsed !== "object") return emptyData();
     const data = parsed as Record<string, unknown>;
     if (
-      data.version !== 1 ||
+      (data.version !== 1 && data.version !== 2) ||
       !Array.isArray(data.dogs) ||
       !Array.isArray(data.services)
     )
@@ -70,11 +64,22 @@ export const parseData = (raw: string | null): PawtineraryData => {
       }));
     const dogIds = new Set(dogs.map((dog) => dog.id));
     return {
-      version: 1,
+      version: 2,
       dogs,
       services: data.services
         .filter(validService)
-        .filter((service) => dogIds.has(service.dogId)),
+        .filter((service) => dogIds.has(service.dogId))
+        .map((service) => ({
+          id: service.id,
+          dogId: service.dogId,
+          date: service.date,
+          group: service.group,
+          status: service.status,
+          createdAt:
+            typeof service.createdAt === "string" ? service.createdAt : "",
+          updatedAt:
+            typeof service.updatedAt === "string" ? service.updatedAt : "",
+        })),
     };
   } catch {
     return emptyData();
@@ -82,7 +87,12 @@ export const parseData = (raw: string | null): PawtineraryData => {
 };
 export const readData = () => {
   try {
-    return parseData(window.localStorage.getItem(STORAGE_KEY));
+    const current = window.localStorage.getItem(STORAGE_KEY);
+    return parseData(
+      current === null
+        ? window.localStorage.getItem(LEGACY_STORAGE_KEY)
+        : current,
+    );
   } catch {
     return emptyData();
   }

@@ -9,10 +9,7 @@ import {
   weekEnd,
   weekStart,
 } from "./dates";
-import { getTotals, serviceAmount } from "./earnings";
 import {
-  formatCurrency,
-  formatDuration,
   formatGroup,
   formatLocalizedDate,
   formatLocalizedShortDay,
@@ -75,10 +72,8 @@ export const reportText = (report: ReportData) => {
     key: Parameters<typeof translate>[1],
     params?: Record<string, string | number>,
   ) => translate(report.language, key, params);
-  const money = (amount: number) => formatCurrency(amount, report.language);
   const items = reportServices(report);
   const dogMap = new Map(report.dogs.map((dog) => [dog.id, dog]));
-  const totals = getTotals(items, report.dogs);
   const lines = [
     "PAWTINERARY",
     t("Report: {period}", {
@@ -93,22 +88,10 @@ export const reportText = (report: ReportData) => {
   if (!items.length) lines.push(t("No services in this period."));
   items.forEach((item) => {
     const dog = dogMap.get(item.dogId)!;
-    const rate =
-      item.status === "completed"
-        ? (item.completedHourlyRate ?? dog.hourlyRate)
-        : dog.hourlyRate;
     lines.push(
-      `${formatLocalizedShortDay(item.date, report.language)} | ${formatGroup(item.group, report.language)} | ${dog.name}${dog.ownerName ? ` (${dog.ownerName})` : ""} | ${formatDuration(item.durationMinutes, report.language)} | ${formatStatus(item.status, report.language)} | ${money(rate)}/${t("hour")} | ${item.status === "cancelled" ? money(0) : money(serviceAmount(item, dog))}`,
+      `${formatLocalizedShortDay(item.date, report.language)} | ${formatGroup(item.group, report.language)} | ${dog.name}${dog.ownerName ? ` (${dog.ownerName})` : ""} | ${formatStatus(item.status, report.language)}`,
     );
   });
-  lines.push(
-    "",
-    t("Earned: {amount}", { amount: money(totals.earned) }),
-    t("Potential: {amount}", { amount: money(totals.potential) }),
-    t("Combined total: {amount}", {
-      amount: money(totals.earned + totals.potential),
-    }),
-  );
   return lines.join("\n");
 };
 export const reportAnchor = (date: string) => fromKey(date);
