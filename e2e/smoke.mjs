@@ -29,6 +29,10 @@ try {
     await page.locator('meta[name="twitter:card"]').getAttribute('content'),
     'summary_large_image',
   );
+  assert.equal(
+    await page.locator('meta[name="description"]').getAttribute('content'),
+    'Plan dog walks, keep client details organized, and track visits in one calm workspace.',
+  );
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
   const reloadResponse = await page.reload();
   assert.equal(reloadResponse?.status(), 200, `Refreshing ${dogsUrl} did not return HTTP 200`);
