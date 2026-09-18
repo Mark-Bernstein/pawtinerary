@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
 import type { DogInput, Group } from "../types";
@@ -10,6 +10,7 @@ import {
   validateDogForm,
   type PlannedService,
 } from "../utils/dogFormValidation";
+import { MultiDateCalendar } from "../components/MultiDateCalendar";
 import {
   Button,
   Card,
@@ -66,16 +67,10 @@ const emptyInput: DogInput = {
   accessInstructions: "",
   hourlyRate: 0,
 };
-const newPlan = (): PlannedService => ({
-  key: crypto.randomUUID(),
-  date: todayKey(),
-  group: "Group 1",
-});
-
 export const DogFormPage = () => {
   const { id } = useParams();
   const { data, addDog, updateDog } = useApp();
-  const { t, language, group: groupLabel } = useLanguage();
+  const { t, language, shortDay, group: groupLabel } = useLanguage();
   const navigate = useNavigate();
   const dog = data.dogs.find((item) => item.id === id);
   const [input, setInput] = useState<DogInput>(() =>
@@ -94,6 +89,7 @@ export const DogFormPage = () => {
   );
   const [rateText, setRateText] = useState(dog ? (language === "en" ? String(dog.hourlyRate) : String(dog.hourlyRate).replace(".", ",")) : "");
   const [planned, setPlanned] = useState<PlannedService[]>([]);
+  const [calendarGroup, setCalendarGroup] = useState<Group>("Group 1");
   const [attempted, setAttempted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const validation = validateDogForm(
@@ -331,44 +327,53 @@ export const DogFormPage = () => {
                 <div>
                   <SectionTitle>{t("Plan services")}</SectionTitle>
                   <Muted>
-                    {t("Add individual dates now, or use Add Service later.")}
+                    {t("Choose a group, then tap dates to add or remove services.")}
                   </Muted>
                 </div>
-                <Button
-                  type="button"
-                  onClick={() =>
-                    setPlanned((current) => [...current, newPlan()])
-                  }
-                >
-                  <Plus size={15} /> {t("Add date")}
-                </Button>
               </Row>
+              <Field>
+                {t("Group")}
+                <Select
+                  value={calendarGroup}
+                  onChange={(event) => setCalendarGroup(event.target.value as Group)}
+                  aria-label={t("Group for selected dates")}
+                >
+                  {(["Group 1", "Group 2", "Group 3"] as Group[]).map((group) => (
+                    <option key={group} value={group}>
+                      {groupLabel(group)}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <MultiDateCalendar
+                selectedDates={planned
+                  .filter((item) => item.group === calendarGroup)
+                  .map((item) => item.date)}
+                onToggle={(date) =>
+                  setPlanned((current) => {
+                    const existing = current.find(
+                      (item) => item.date === date && item.group === calendarGroup,
+                    );
+                    return existing
+                      ? current.filter((item) => item.key !== existing.key)
+                      : [...current, { key: crypto.randomUUID(), date, group: calendarGroup }];
+                  })
+                }
+                initialDate={todayKey()}
+              />
               {planned.map((item) => (
                 <PlannerRow key={item.key}>
-                  <Field>
-                    {t("Date")}
-                    <Input
-                      type="date"
-                      value={item.date}
-                      onChange={(event) =>
-                        setPlan(item.key, { date: event.target.value })
-                      }
-                      required
-                      aria-label={t("Date")}
-                      aria-invalid={Boolean(errors[`date:${item.key}`])}
-                      aria-describedby={
-                        errors[`date:${item.key}`]
-                          ? `plan-date-error-${item.key}`
-                          : undefined
-                      }
-                      data-validation-key={`date:${item.key}`}
-                    />
+                  <div data-validation-key={`date:${item.key}`} tabIndex={-1}>
+                    <Muted>{t("Date")}</Muted>
+                    <div style={{ color: "var(--text)", fontWeight: 700 }}>
+                      {shortDay(item.date)}
+                    </div>
                     {errors[`date:${item.key}`] && (
                       <FieldError id={`plan-date-error-${item.key}`}>
                         {errors[`date:${item.key}`]}
                       </FieldError>
                     )}
-                  </Field>
+                  </div>
                   <Field>
                     {t("Group")}
                     <Select

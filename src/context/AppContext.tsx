@@ -27,7 +27,7 @@ interface AppActions {
     services?: Omit<ServiceInput, "dogId">[],
   ) => void;
   deleteDog: (id: string) => void;
-  addService: (input: ServiceInput) => boolean;
+  addServices: (inputs: ServiceInput[]) => boolean;
   updateService: (id: string, input: ServiceInput) => boolean;
   setServiceStatus: (id: string, status: ServiceStatus) => void;
   notify: (message: TranslationKey) => void;
@@ -127,16 +127,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setData((current) => removeDog(current, id));
         notify("Dog deleted");
       },
-      addService: (input) => {
-        if (duplicate(data.services, input)) {
+      addServices: (inputs) => {
+        if (inputs.length === 0) {
+          notify("Choose a service date.");
+          return false;
+        }
+        const unique = new Set(
+          inputs.map((input) => `${input.dogId}|${input.date}|${input.group}`),
+        );
+        if (
+          unique.size !== inputs.length ||
+          inputs.some((input) => duplicate(data.services, input))
+        ) {
           notify("That dog is already scheduled in this group on this date");
           return false;
         }
         setData((current) => ({
           ...current,
-          services: [...current.services, makeService(input)],
+          services: [
+            ...current.services,
+            ...inputs.map((input) => makeService(input)),
+          ],
         }));
-        notify("Service added");
+        notify(inputs.length === 1 ? "Service added" : "Services added");
         return true;
       },
       updateService: (id, input) => {

@@ -30,6 +30,7 @@ export const englishKeys = [
   "Delete Dog",
   "Save changes",
   "Add service",
+  "Add {count} services",
   "Create dog",
   "Edit",
   "More",
@@ -122,8 +123,13 @@ export const englishKeys = [
   "Keys, gate code, entry details…",
   "Access instructions stay on this device and are excluded from reports.",
   "Plan services",
-  "Add individual dates now, or use Add Service later.",
-  "Add date",
+  "Choose a group, then tap dates to add or remove services.",
+  "Group for selected dates",
+  "Service dates",
+  "Tap dates to add or remove them.",
+  "{count} date selected",
+  "{count} dates selected",
+  "Remove {date}",
   "Remove planned service",
   "Edit service",
   "Create a dog before scheduling a service.",
@@ -157,6 +163,7 @@ export const englishKeys = [
   "Dog deleted",
   "That dog is already scheduled in this group on this date",
   "Service added",
+  "Services added",
   "Service updated",
   "Service completed",
   "Service cancelled",
@@ -185,6 +192,7 @@ export const englishKeys = [
   "Choose a dog for this service.",
   "Choose a service group.",
   "{dog} already has a {group} service on this date. Choose another group or date.",
+  "{dog} already has a {group} service on {date}. Remove that date or choose another group.",
   "Choose the language used throughout Pawtinerary.",
   "English (default)",
   "Spanish",
@@ -234,6 +242,7 @@ const es: Record<TranslationKey, string> = {
   "Delete Dog": "Eliminar perro",
   "Save changes": "Guardar cambios",
   "Add service": "Añadir servicio",
+  "Add {count} services": "Añadir {count} servicios",
   "Create dog": "Crear perro",
   Edit: "Editar",
   More: "Más",
@@ -341,9 +350,14 @@ const es: Record<TranslationKey, string> = {
   "Access instructions stay on this device and are excluded from reports.":
     "Las instrucciones de acceso permanecen en este dispositivo y se excluyen de los informes.",
   "Plan services": "Planificar servicios",
-  "Add individual dates now, or use Add Service later.":
-    "Añade fechas concretas ahora o usa Añadir servicio más tarde.",
-  "Add date": "Añadir fecha",
+  "Choose a group, then tap dates to add or remove services.":
+    "Elige un grupo y toca las fechas para añadir o quitar servicios.",
+  "Group for selected dates": "Grupo de las fechas seleccionadas",
+  "Service dates": "Fechas de servicio",
+  "Tap dates to add or remove them.": "Toca las fechas para añadirlas o quitarlas.",
+  "{count} date selected": "{count} fecha seleccionada",
+  "{count} dates selected": "{count} fechas seleccionadas",
+  "Remove {date}": "Quitar {date}",
   "Remove planned service": "Quitar servicio planificado",
   "Edit service": "Editar servicio",
   "Create a dog before scheduling a service.":
@@ -386,6 +400,7 @@ const es: Record<TranslationKey, string> = {
   "That dog is already scheduled in this group on this date":
     "Ese perro ya está programado en este grupo y fecha",
   "Service added": "Servicio añadido",
+  "Services added": "Servicios añadidos",
   "Service updated": "Servicio actualizado",
   "Service completed": "Servicio completado",
   "Service cancelled": "Servicio cancelado",
@@ -426,6 +441,8 @@ const es: Record<TranslationKey, string> = {
   "Choose a service group.": "Elige un grupo para el servicio.",
   "{dog} already has a {group} service on this date. Choose another group or date.":
     "{dog} ya tiene un servicio en {group} para esta fecha. Elige otro grupo o fecha.",
+  "{dog} already has a {group} service on {date}. Remove that date or choose another group.":
+    "{dog} ya tiene un servicio en {group} el {date}. Quita esa fecha o elige otro grupo.",
   "Choose the language used throughout Pawtinerary.":
     "Elige el idioma de Pawtinerary.",
   "English (default)": "Inglés (predeterminado)",
@@ -470,6 +487,7 @@ const ca: Record<TranslationKey, string> = {
   "Delete Dog": "Eliminar gos",
   "Save changes": "Desar els canvis",
   "Add service": "Afegir servei",
+  "Add {count} services": "Afegir {count} serveis",
   "Create dog": "Crear gos",
   Edit: "Editar",
   More: "Més",
@@ -576,9 +594,14 @@ const ca: Record<TranslationKey, string> = {
   "Access instructions stay on this device and are excluded from reports.":
     "Les instruccions d'accés romanen en aquest dispositiu i s'exclouen dels informes.",
   "Plan services": "Planificar serveis",
-  "Add individual dates now, or use Add Service later.":
-    "Afegeix dates concretes ara o fes servir Afegir servei més tard.",
-  "Add date": "Afegir data",
+  "Choose a group, then tap dates to add or remove services.":
+    "Tria un grup i toca les dates per afegir o treure serveis.",
+  "Group for selected dates": "Grup de les dates seleccionades",
+  "Service dates": "Dates de servei",
+  "Tap dates to add or remove them.": "Toca les dates per afegir-les o treure-les.",
+  "{count} date selected": "{count} data seleccionada",
+  "{count} dates selected": "{count} dates seleccionades",
+  "Remove {date}": "Treure {date}",
   "Remove planned service": "Treure el servei planificat",
   "Edit service": "Editar servei",
   "Create a dog before scheduling a service.":
@@ -621,6 +644,7 @@ const ca: Record<TranslationKey, string> = {
   "That dog is already scheduled in this group on this date":
     "Aquest gos ja està programat en aquest grup i data",
   "Service added": "Servei afegit",
+  "Services added": "Serveis afegits",
   "Service updated": "Servei actualitzat",
   "Service completed": "Servei completat",
   "Service cancelled": "Servei cancel·lat",
@@ -661,6 +685,8 @@ const ca: Record<TranslationKey, string> = {
   "Choose a service group.": "Tria un grup per al servei.",
   "{dog} already has a {group} service on this date. Choose another group or date.":
     "{dog} ja té un servei a {group} en aquesta data. Tria un altre grup o data.",
+  "{dog} already has a {group} service on {date}. Remove that date or choose another group.":
+    "{dog} ja té un servei a {group} el {date}. Treu aquesta data o tria un altre grup.",
   "Choose the language used throughout Pawtinerary.":
     "Tria la llengua de Pawtinerary.",
   "English (default)": "Anglès (predeterminat)",

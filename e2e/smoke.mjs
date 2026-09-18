@@ -64,6 +64,18 @@ try {
   await page.getByText("Enter the dog's name.").waitFor();
   await page.getByText('Enter an hourly rate in euros.').waitFor();
   await page.getByText("Enter the dog's address.").waitFor();
+  const dateKeys = await page.evaluate(() => {
+    const key = day => `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+    const now = new Date();
+    return {
+      today: key(now),
+      anotherDay: key(new Date(now.getFullYear(), now.getMonth(), now.getDate() === 10 ? 11 : 10)),
+      nextMonthFive: key(new Date(now.getFullYear(), now.getMonth() + 1, 5)),
+      nextMonthSix: key(new Date(now.getFullYear(), now.getMonth() + 1, 6)),
+      nextMonthSeven: key(new Date(now.getFullYear(), now.getMonth() + 1, 7)),
+      nextMonthEight: key(new Date(now.getFullYear(), now.getMonth() + 1, 8)),
+    };
+  });
   assert(await page.getByLabel('Dog name *').evaluate(element => document.activeElement === element));
   await page.getByLabel('Dog name *').fill('Bailey');
   await page.getByLabel('Hourly rate (€) *').fill('twenty');
@@ -78,12 +90,24 @@ try {
   await page.getByText('Enter a numeric hourly rate, such as 20 or 20.50.').waitFor({ state: 'hidden' });
   await page.getByText('Enter a valid email address, such as pat@example.com.').waitFor({ state: 'hidden' });
   await page.getByLabel('Entry / access instructions').fill('PRIVATE-CODE-123');
-  await page.getByRole('button', { name: 'Add date' }).click();
-  await page.getByRole('button', { name: 'Add date' }).click();
+  const dogCalendar = page.getByRole('group', { name: 'Service dates' });
+  await dogCalendar.locator(`button[data-date="${dateKeys.today}"]`).click();
+  await dogCalendar.locator(`button[data-date="${dateKeys.anotherDay}"]`).click();
+  await dogCalendar.locator(`button[data-date="${dateKeys.anotherDay}"]`).click();
+  assert.equal(await dogCalendar.locator(`button[data-date="${dateKeys.anotherDay}"]`).getAttribute('aria-pressed'), 'false');
+  await dogCalendar.locator(`button[data-date="${dateKeys.anotherDay}"]`).click();
+  assert.equal(await page.getByText('2 dates selected').count(), 1);
+  await page.setViewportSize({ width: 320, height: 700 });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+  if (screenshots) await page.screenshot({ path: '/private/tmp/pawtinerary-dog-calendar.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByLabel('Group for selected dates').selectOption('Group 3');
+  await dogCalendar.locator(`button[data-date="${dateKeys.today}"]`).click();
   assert.equal(await page.getByLabel('Duration').count(), 0);
+  await page.getByLabel('Group', { exact: true }).nth(2).selectOption('Group 1');
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
   await page.getByText('Group 1 is already planned for this date.').waitFor();
-  await page.getByLabel('Group').nth(1).selectOption('Group 3');
+  await page.getByLabel('Group', { exact: true }).nth(2).selectOption('Group 3');
   await page.getByText('Group 1 is already planned for this date.').waitFor({ state: 'hidden' });
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
   await page.getByText('Scheduled services').waitFor();
@@ -97,16 +121,37 @@ try {
   await editService.getByRole('button', { name: 'Close' }).click();
 
   await page.getByRole('button', { name: 'Add Service' }).first().click();
-  assert.equal(await page.getByRole('dialog', { name: 'Add service' }).getByLabel('Duration').count(), 0);
-  await page.getByLabel('Date').last().fill('2026-12-31');
-  await page.getByLabel('Group').last().selectOption('Group 2');
-  await page.getByRole('button', { name: 'Add service', exact: true }).last().click();
+  const addService = page.getByRole('dialog', { name: 'Add service' });
+  assert.equal(await addService.getByLabel('Duration').count(), 0);
+  await addService.getByLabel('Group', { exact: true }).selectOption('Group 2');
+  const addCalendar = addService.getByRole('group', { name: 'Service dates' });
+  await addCalendar.locator(`button[data-date="${dateKeys.today}"]`).click();
+  await addService.getByRole('button', { name: 'Add service', exact: true }).click();
+  await addService.getByText('Choose a service date.').waitFor();
+  await addCalendar.getByRole('button', { name: 'Next month' }).click();
+  await addCalendar.locator(`button[data-date="${dateKeys.nextMonthFive}"]`).click();
+  await addCalendar.locator(`button[data-date="${dateKeys.nextMonthSix}"]`).click();
+  await addCalendar.locator(`button[data-date="${dateKeys.nextMonthSix}"]`).click();
+  assert.equal(await addCalendar.locator(`button[data-date="${dateKeys.nextMonthSix}"]`).getAttribute('aria-pressed'), 'false');
+  await addCalendar.locator(`button[data-date="${dateKeys.nextMonthSix}"]`).click();
+  await page.setViewportSize({ width: 320, height: 700 });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+  if (screenshots) await page.screenshot({ path: '/private/tmp/pawtinerary-service-calendar.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await addService.getByRole('button', { name: 'Add 2 services' }).click();
+  const addedDates = await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')).services.filter(service => service.group === 'Group 2').map(service => service.date).sort());
+  assert.deepEqual(addedDates, [dateKeys.nextMonthFive, dateKeys.nextMonthSix]);
   await page.getByRole('button', { name: 'Add Service' }).first().click();
-  await page.getByLabel('Date').last().fill('2026-12-31');
-  await page.getByLabel('Group').last().selectOption('Group 2');
-  await page.getByRole('button', { name: 'Add service', exact: true }).last().click();
-  await page.getByText('Bailey already has a Group 2 service on this date. Choose another group or date.').waitFor();
-  await page.getByRole('button', { name: 'Close' }).click();
+  const duplicateAdd = page.getByRole('dialog', { name: 'Add service' });
+  await duplicateAdd.getByLabel('Group', { exact: true }).selectOption('Group 2');
+  const duplicateCalendar = duplicateAdd.getByRole('group', { name: 'Service dates' });
+  await duplicateCalendar.getByRole('button', { name: 'Next month' }).click();
+  await duplicateCalendar.locator(`button[data-date="${dateKeys.nextMonthFive}"]`).click();
+  await duplicateAdd.getByRole('button', { name: 'Add 2 services' }).click();
+  await duplicateAdd.getByText(/already has a Group 2 service on .*Remove that date/).waitFor();
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')).services.filter(service => service.group === 'Group 2').map(service => service.date).sort()), addedDates);
+  await duplicateCalendar.locator(`button[data-date="${dateKeys.nextMonthFive}"]`).click();
+  await duplicateAdd.getByRole('button', { name: 'Add service', exact: true }).click();
 
   await page.getByRole('link', { name: 'Schedule' }).last().click();
   await page.getByText('Group 1').first().waitFor();
@@ -123,9 +168,18 @@ try {
 
   await page.getByRole('link', { name: 'Edit Info' }).click();
   await page.getByLabel('Hourly rate (€) *').fill('25');
+  const editDogCalendar = page.getByRole('group', { name: 'Service dates' });
+  await page.getByLabel('Group for selected dates').selectOption('Group 3');
+  await editDogCalendar.getByRole('button', { name: 'Next month' }).click();
+  await editDogCalendar.locator(`button[data-date="${dateKeys.nextMonthSeven}"]`).click();
+  await editDogCalendar.locator(`button[data-date="${dateKeys.nextMonthEight}"]`).click();
   await page.getByRole('button', { name: 'Save changes' }).click();
   await page.getByText('€25.00').first().waitFor();
   assert.equal(await page.getByText('€20.00').count(), 0);
+  assert.deepEqual(
+    await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')).services.filter(service => service.group === 'Group 3').map(service => service.date).sort()),
+    [dateKeys.today, dateKeys.nextMonthSeven, dateKeys.nextMonthEight].sort(),
+  );
   await page.getByRole('button', { name: /1 Main Street, Dublin/ }).click();
   await page.getByText('Address copied!').waitFor();
 
