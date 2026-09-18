@@ -45,10 +45,11 @@ export const ServiceFormModal = ({
   if (!dog) validation.dogId = t("Choose a dog for this service.");
   if (!service && selectedDates.length === 0)
     validation.date = t("Choose a service date.");
-  else if (service && !date)
-    validation.date = t("Choose a service date.");
+  else if (service && !date) validation.date = t("Choose a service date.");
   else if (
-    service ? !isValidDateKey(date) : selectedDates.some((key) => !isValidDateKey(key))
+    service
+      ? !isValidDateKey(date)
+      : selectedDates.some((key) => !isValidDateKey(key))
   )
     validation.date = t("Choose a valid service date.");
   if (!GROUPS.includes(group)) validation.group = t("Choose a service group.");
@@ -56,16 +57,16 @@ export const ServiceFormModal = ({
     dog &&
     !validation.date &&
     !validation.group &&
-      (service ? [date] : selectedDates).find((key) =>
-        data.services.some(
-          (item) =>
-            item.id !== service?.id &&
-            item.status !== "cancelled" &&
-            item.dogId === dogId &&
-            item.date === key &&
-            item.group === group,
-        ),
-      );
+    (service ? [date] : selectedDates).find((key) =>
+      data.services.some(
+        (item) =>
+          item.id !== service?.id &&
+          item.status !== "cancelled" &&
+          item.dogId === dogId &&
+          item.date === key &&
+          item.group === group,
+      ),
+    );
   if (conflictingDate && dog) {
     if (service) {
       validation.group = t(
@@ -75,7 +76,11 @@ export const ServiceFormModal = ({
     } else {
       validation.date = t(
         "{dog} already has a {group} service on {date}. Remove that date or choose another group.",
-        { dog: dog.name, group: groupLabel(group), date: shortDay(conflictingDate) },
+        {
+          dog: dog.name,
+          group: groupLabel(group),
+          date: shortDay(conflictingDate),
+        },
       );
     }
   }
@@ -161,7 +166,9 @@ export const ServiceFormModal = ({
                   required
                   aria-label={t("Date")}
                   aria-invalid={Boolean(errors.date)}
-                  aria-describedby={errors.date ? "service-date-error" : undefined}
+                  aria-describedby={
+                    errors.date ? "service-date-error" : undefined
+                  }
                   data-validation-key="date"
                 />
                 {errors.date && (
@@ -213,13 +220,21 @@ export const ServiceFormModal = ({
                 <FieldError id="service-group-error">{errors.group}</FieldError>
               )}
             </Field>
-            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 7 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingTop: 7,
+              }}
+            >
               <Button $variant="primary" type="submit">
                 {service
                   ? t("Save changes")
                   : selectedDates.length <= 1
                     ? t("Add service")
-                    : t("Add {count} services", { count: selectedDates.length })}
+                    : t("Add {count} services", {
+                        count: selectedDates.length,
+                      })}
               </Button>
             </div>
           </Stack>

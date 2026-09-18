@@ -36,12 +36,9 @@ export const reportDocx = async (report: ReportData) => {
   const dogMap = new Map(report.dogs.map((dog) => [dog.id, dog]));
   const rows = [
     new TableRow({
-      children: [
-        t("Date"),
-        t("Group"),
-        t("Dog / Client"),
-        t("Status"),
-      ].map((value) => cell(value, true)),
+      children: [t("Date"), t("Group"), t("Dog / Client"), t("Status")].map(
+        (value) => cell(value, true),
+      ),
     }),
   ];
   items.forEach((item) => {

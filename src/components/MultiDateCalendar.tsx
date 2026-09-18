@@ -33,7 +33,9 @@ const CalendarHead = styled.div`
   margin-bottom: 12px;
   strong {
     color: var(--text);
-    font: 700 16px Outfit, sans-serif;
+    font:
+      700 16px Outfit,
+      sans-serif;
     text-align: center;
   }
   button {
@@ -64,11 +66,17 @@ const DayGrid = styled.div`
 const DayButton = styled.button<{ $outside: boolean; $selected: boolean }>`
   min-width: 0;
   min-height: 38px;
-  border: 1px solid ${({ $selected }) => ($selected ? "var(--accent)" : "transparent")};
+  border: 1px solid
+    ${({ $selected }) => ($selected ? "var(--accent)" : "transparent")};
   border-radius: 9px;
-  background: ${({ $selected }) => ($selected ? "var(--accent)" : "transparent")};
+  background: ${({ $selected }) =>
+    $selected ? "var(--accent)" : "transparent"};
   color: ${({ $selected, $outside }) =>
-    $selected ? "var(--on-accent)" : $outside ? "var(--muted-faint)" : "var(--text)"};
+    $selected
+      ? "var(--on-accent)"
+      : $outside
+        ? "var(--muted-faint)"
+        : "var(--text)"};
   font-size: 13px;
   font-weight: ${({ $selected }) => ($selected ? 800 : 600)};
   &[data-today="true"]:not([aria-pressed="true"]) {
@@ -119,7 +127,11 @@ export const MultiDateCalendar = ({
 }) => {
   const { t, date } = useLanguage();
   const [displayedMonth, setDisplayedMonth] = useState(() =>
-    startOfMonth(initialDate && isValidDateKey(initialDate) ? fromKey(initialDate) : new Date()),
+    startOfMonth(
+      initialDate && isValidDateKey(initialDate)
+        ? fromKey(initialDate)
+        : new Date(),
+    ),
   );
   const validDates = [...new Set(selectedDates.filter(isValidDateKey))].sort();
   const selected = new Set(validDates);
@@ -182,9 +194,14 @@ export const MultiDateCalendar = ({
       </CalendarPanel>
       <Selection aria-live="polite">
         <span>
-          {t(validDates.length === 1 ? "{count} date selected" : "{count} dates selected", {
-            count: validDates.length,
-          })}
+          {t(
+            validDates.length === 1
+              ? "{count} date selected"
+              : "{count} dates selected",
+            {
+              count: validDates.length,
+            },
+          )}
         </span>
         {validDates.map((key) => {
           const label = date(fromKey(key), "d MMM yyyy");

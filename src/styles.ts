@@ -296,7 +296,10 @@ export const Input = styled.input`
   border-radius: 12px;
   padding: 10px 13px;
   color: var(--text);
-  &::placeholder { color: var(--muted); opacity: 0.9; }
+  &::placeholder {
+    color: var(--muted);
+    opacity: 0.9;
+  }
   outline: none;
   &:focus {
     border-color: var(--accent-border);
@@ -339,7 +342,10 @@ export const Textarea = styled.textarea`
   border-radius: 12px;
   padding: 10px 13px;
   color: var(--text);
-  &::placeholder { color: var(--muted); opacity: 0.9; }
+  &::placeholder {
+    color: var(--muted);
+    opacity: 0.9;
+  }
   resize: vertical;
   outline: none;
   &:focus {
@@ -360,7 +366,15 @@ export const Badge = styled.span<{ $tone?: "green" | "amber" | "gray" }>`
   font-size: 11px;
   font-weight: 800;
   background: ${({ $tone }) =>
-    $tone === "green" ? "var(--accent-soft)" : $tone === "gray" ? "var(--badge-gray-bg)" : "var(--badge-amber-bg)"};
+    $tone === "green"
+      ? "var(--accent-soft)"
+      : $tone === "gray"
+        ? "var(--badge-gray-bg)"
+        : "var(--badge-amber-bg)"};
   color: ${({ $tone }) =>
-    $tone === "green" ? "var(--accent-text)" : $tone === "gray" ? "var(--badge-gray-text)" : "var(--badge-amber-text)"};
+    $tone === "green"
+      ? "var(--accent-text)"
+      : $tone === "gray"
+        ? "var(--badge-gray-text)"
+        : "var(--badge-amber-text)"};
 `;

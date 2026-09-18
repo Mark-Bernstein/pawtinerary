@@ -55,14 +55,34 @@ export const reportPeriodLabel = (
     return `${formatLocalizedDate(weekStart(anchor), "d MMM yyyy", language)} – ${formatLocalizedDate(weekEnd(anchor), "d MMM yyyy", language)}`;
   return `${formatLocalizedDate(monthStart(anchor), "d MMM yyyy", language)} – ${formatLocalizedDate(monthEnd(anchor), "d MMM yyyy", language)}`;
 };
-export const reportFileName = (period: Period, anchor: Date, language: Language = "en") => {
+export const reportFileName = (
+  period: Period,
+  anchor: Date,
+  language: Language = "en",
+) => {
   const names = {
-    en: { day: "Day", week: "Week", month: "Month", lifetime: "Lifetime-Report" },
-    es: { day: "Dia", week: "Semana", month: "Mes", lifetime: "Informe-Historico" },
-    ca: { day: "Dia", week: "Setmana", month: "Mes", lifetime: "Informe-Historic" },
+    en: {
+      day: "Day",
+      week: "Week",
+      month: "Month",
+      lifetime: "Lifetime-Report",
+    },
+    es: {
+      day: "Dia",
+      week: "Semana",
+      month: "Mes",
+      lifetime: "Informe-Historico",
+    },
+    ca: {
+      day: "Dia",
+      week: "Setmana",
+      month: "Mes",
+      lifetime: "Informe-Historic",
+    },
   }[language];
   if (period === "lifetime") return `Pawtinerary-${names.lifetime}.docx`;
-  if (period === "day") return `Pawtinerary-${names.day}-${dateKey(anchor)}.docx`;
+  if (period === "day")
+    return `Pawtinerary-${names.day}-${dateKey(anchor)}.docx`;
   if (period === "week")
     return `Pawtinerary-${names.week}-${dateKey(weekStart(anchor))}.docx`;
   return `Pawtinerary-${names.month}-${format(anchor, "yyyy-MM")}.docx`;

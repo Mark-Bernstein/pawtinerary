@@ -47,21 +47,19 @@ export const parseData = (raw: string | null): PawtineraryData => {
       !Array.isArray(data.services)
     )
       return emptyData();
-    const dogs = data.dogs
-      .filter(validDog)
-      .map((dog) => ({
-        ...dog,
-        ownerName: typeof dog.ownerName === "string" ? dog.ownerName : "",
-        ownerPhone: typeof dog.ownerPhone === "string" ? dog.ownerPhone : "",
-        ownerEmail: typeof dog.ownerEmail === "string" ? dog.ownerEmail : "",
-        notes: typeof dog.notes === "string" ? dog.notes : "",
-        accessInstructions:
-          typeof dog.accessInstructions === "string"
-            ? dog.accessInstructions
-            : "",
-        createdAt: typeof dog.createdAt === "string" ? dog.createdAt : "",
-        updatedAt: typeof dog.updatedAt === "string" ? dog.updatedAt : "",
-      }));
+    const dogs = data.dogs.filter(validDog).map((dog) => ({
+      ...dog,
+      ownerName: typeof dog.ownerName === "string" ? dog.ownerName : "",
+      ownerPhone: typeof dog.ownerPhone === "string" ? dog.ownerPhone : "",
+      ownerEmail: typeof dog.ownerEmail === "string" ? dog.ownerEmail : "",
+      notes: typeof dog.notes === "string" ? dog.notes : "",
+      accessInstructions:
+        typeof dog.accessInstructions === "string"
+          ? dog.accessInstructions
+          : "",
+      createdAt: typeof dog.createdAt === "string" ? dog.createdAt : "",
+      updatedAt: typeof dog.updatedAt === "string" ? dog.updatedAt : "",
+    }));
     const dogIds = new Set(dogs.map((dog) => dog.id));
     return {
       version: 2,

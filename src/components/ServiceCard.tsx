@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Check,
-  MoreHorizontal,
-  Pencil,
-  RotateCcw,
-  X,
-} from "lucide-react";
+import { Check, MoreHorizontal, Pencil, RotateCcw, X } from "lucide-react";
 import { styled } from "styled-components";
 import { useApp } from "../context/AppContext";
 import type { Dog, Service } from "../types";

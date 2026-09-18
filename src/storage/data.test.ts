@@ -52,20 +52,26 @@ describe("stored data", () => {
     const legacy = JSON.stringify({
       version: 1,
       dogs: [{ id: "d", name: "Dog", address: "Street", hourlyRate: 20 }],
-      services: [{
-        id: "completed",
-        dogId: "d",
-        date: "2026-09-17",
-        group: "Group 1",
-        durationMinutes: 90,
-        status: "completed",
-        completedHourlyRate: 18,
-      }],
+      services: [
+        {
+          id: "completed",
+          dogId: "d",
+          date: "2026-09-17",
+          group: "Group 1",
+          durationMinutes: 90,
+          status: "completed",
+          completedHourlyRate: 18,
+        },
+      ],
     });
     vi.stubGlobal("window", {
       localStorage: {
         getItem: (key: string) =>
-          key === STORAGE_KEY ? null : key === "pawtinerary.data.v1" ? legacy : null,
+          key === STORAGE_KEY
+            ? null
+            : key === "pawtinerary.data.v1"
+              ? legacy
+              : null,
       },
     });
     try {

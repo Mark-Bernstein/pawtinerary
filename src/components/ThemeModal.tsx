@@ -9,8 +9,7 @@ const Choice = styled.button<{ $selected: boolean }>`
   width: 100%;
   min-height: 72px;
   border: 1px solid
-    ${({ $selected }) =>
-      $selected ? "var(--accent-border)" : "var(--border)"};
+    ${({ $selected }) => ($selected ? "var(--accent-border)" : "var(--border)")};
   background: ${({ $selected }) =>
     $selected ? "var(--accent-soft)" : "var(--surface)"};
   color: var(--text);
@@ -102,7 +101,9 @@ export const ThemeModal = ({ onClose }: { onClose: () => void }) => {
                 <strong>{label}</strong>
                 <small>{description}</small>
               </ChoiceText>
-              {theme === value && <Check size={18} aria-label={t("Selected")} />}
+              {theme === value && (
+                <Check size={18} aria-label={t("Selected")} />
+              )}
             </Choice>
           ))}
         </div>

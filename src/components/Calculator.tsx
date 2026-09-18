@@ -28,8 +28,10 @@ const Key = styled.button<{ $accent?: boolean; $wide?: boolean }>`
   min-height: 58px;
   border: 0;
   border-radius: 14px;
-  background: ${({ $accent }) => ($accent ? "var(--accent)" : "var(--surface-tint)")};
-  color: ${({ $accent }) => ($accent ? "var(--on-accent)" : "var(--accent-text)")};
+  background: ${({ $accent }) =>
+    $accent ? "var(--accent)" : "var(--surface-tint)"};
+  color: ${({ $accent }) =>
+    $accent ? "var(--on-accent)" : "var(--accent-text)"};
   font:
     700 19px Outfit,
     sans-serif;
@@ -132,7 +134,11 @@ export const Calculator = ({ onClose }: { onClose: () => void }) => {
             $wide={value === "0"}
             onClick={() => press(value)}
             aria-label={
-              value === "⌫" ? t("Backspace") : value === "C" ? t("Clear") : value
+              value === "⌫"
+                ? t("Backspace")
+                : value === "C"
+                  ? t("Clear")
+                  : value
             }
           >
             {value}

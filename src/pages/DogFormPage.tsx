@@ -87,7 +87,13 @@ export const DogFormPage = () => {
         }
       : emptyInput,
   );
-  const [rateText, setRateText] = useState(dog ? (language === "en" ? String(dog.hourlyRate) : String(dog.hourlyRate).replace(".", ",")) : "");
+  const [rateText, setRateText] = useState(
+    dog
+      ? language === "en"
+        ? String(dog.hourlyRate)
+        : String(dog.hourlyRate).replace(".", ",")
+      : "",
+  );
   const [planned, setPlanned] = useState<PlannedService[]>([]);
   const [calendarGroup, setCalendarGroup] = useState<Group>("Group 1");
   const [attempted, setAttempted] = useState(false);
@@ -327,7 +333,9 @@ export const DogFormPage = () => {
                 <div>
                   <SectionTitle>{t("Plan services")}</SectionTitle>
                   <Muted>
-                    {t("Choose a group, then tap dates to add or remove services.")}
+                    {t(
+                      "Choose a group, then tap dates to add or remove services.",
+                    )}
                   </Muted>
                 </div>
               </Row>
@@ -335,14 +343,18 @@ export const DogFormPage = () => {
                 {t("Group")}
                 <Select
                   value={calendarGroup}
-                  onChange={(event) => setCalendarGroup(event.target.value as Group)}
+                  onChange={(event) =>
+                    setCalendarGroup(event.target.value as Group)
+                  }
                   aria-label={t("Group for selected dates")}
                 >
-                  {(["Group 1", "Group 2", "Group 3"] as Group[]).map((group) => (
-                    <option key={group} value={group}>
-                      {groupLabel(group)}
-                    </option>
-                  ))}
+                  {(["Group 1", "Group 2", "Group 3"] as Group[]).map(
+                    (group) => (
+                      <option key={group} value={group}>
+                        {groupLabel(group)}
+                      </option>
+                    ),
+                  )}
                 </Select>
               </Field>
               <MultiDateCalendar
@@ -352,11 +364,19 @@ export const DogFormPage = () => {
                 onToggle={(date) =>
                   setPlanned((current) => {
                     const existing = current.find(
-                      (item) => item.date === date && item.group === calendarGroup,
+                      (item) =>
+                        item.date === date && item.group === calendarGroup,
                     );
                     return existing
                       ? current.filter((item) => item.key !== existing.key)
-                      : [...current, { key: crypto.randomUUID(), date, group: calendarGroup }];
+                      : [
+                          ...current,
+                          {
+                            key: crypto.randomUUID(),
+                            date,
+                            group: calendarGroup,
+                          },
+                        ];
                   })
                 }
                 initialDate={todayKey()}

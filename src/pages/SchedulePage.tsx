@@ -125,8 +125,10 @@ const Calendar = styled.div`
   }
 `;
 const CalendarDay = styled.button<{ $outside: boolean; $today: boolean }>`
-  background: ${({ $today }) => ($today ? "var(--accent-soft)" : "var(--surface)")};
-  border: 1px solid ${({ $today }) => ($today ? "var(--accent-border)" : "var(--border-soft)")};
+  background: ${({ $today }) =>
+    $today ? "var(--accent-soft)" : "var(--surface)"};
+  border: 1px solid
+    ${({ $today }) => ($today ? "var(--accent-border)" : "var(--border-soft)")};
   border-radius: 10px;
   min-height: 72px;
   padding: 7px 3px;
@@ -288,7 +290,9 @@ export const SchedulePage = ({
                     </Badge>
                   </GroupHead>
                   {scheduledDogs.length > 0 && (
-                    <GroupDogList aria-label={`${groupLabel(group)}: ${t("Dogs to visit")}`}>
+                    <GroupDogList
+                      aria-label={`${groupLabel(group)}: ${t("Dogs to visit")}`}
+                    >
                       {scheduledDogs.map((dog) => (
                         <li key={dog.id}>{dog.name}</li>
                       ))}
@@ -408,9 +412,7 @@ export const SchedulePage = ({
         <div style={{ marginTop: 25 }}>
           <EmptyState
             title={t("No dogs yet. Create your first dog to get started.")}
-            description={t(
-              "Add a profile, then plan individual walks here.",
-            )}
+            description={t("Add a profile, then plan individual walks here.")}
             action={
               <Button $variant="primary" onClick={onCreate}>
                 <Plus size={16} /> {t("Create Dog")}
