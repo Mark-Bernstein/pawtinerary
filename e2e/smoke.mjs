@@ -38,8 +38,9 @@ try {
   assert.equal(reloadResponse?.status(), 200, `Refreshing ${dogsUrl} did not return HTTP 200`);
   assert.equal(new URL(page.url()).pathname, '/dogs');
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
-  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
-  assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(17, 27, 24)');
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dog');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(255, 243, 216)');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), '#fff3d8');
   await page.getByRole('button', { name: 'Theme' }).click();
   await page.getByRole('button', { name: /Light Mode/ }).click();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
@@ -55,6 +56,8 @@ try {
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dog');
   await page.getByRole('button', { name: 'Theme' }).click();
   await page.getByRole('button', { name: /Dark Mode/ }).click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  await page.reload();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
 
   await page.goto(base);

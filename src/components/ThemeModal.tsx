@@ -56,8 +56,14 @@ export const ThemeModal = ({ onClose }: { onClose: () => void }) => {
   const { t } = useLanguage();
   const options = [
     {
+      value: "dog",
+      label: t("Dog Mode (default)"),
+      description: t("Sunshine, paw prints, and biscuit-colored cards."),
+      Icon: Bone,
+    },
+    {
       value: "dark",
-      label: t("Dark Mode (default)"),
+      label: t("Dark Mode"),
       description: t("A calm, focused workspace for low light."),
       Icon: MoonStar,
     },
@@ -66,12 +72,6 @@ export const ThemeModal = ({ onClose }: { onClose: () => void }) => {
       label: t("Light Mode"),
       description: t("The original bright Pawtinerary look."),
       Icon: Sun,
-    },
-    {
-      value: "dog",
-      label: t("Dog Mode"),
-      description: t("Sunshine, paw prints, and biscuit-colored cards."),
-      Icon: Bone,
     },
   ] as const;
 

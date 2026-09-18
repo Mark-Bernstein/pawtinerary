@@ -6,9 +6,9 @@ export const englishKeys = [
   "Send Data",
   "Language",
   "Theme",
-  "Dark Mode (default)",
+  "Dark Mode",
   "Light Mode",
-  "Dog Mode",
+  "Dog Mode (default)",
   "Choose how Pawtinerary looks on this device.",
   "A calm, focused workspace for low light.",
   "The original bright Pawtinerary look.",
@@ -214,9 +214,9 @@ const es: Record<TranslationKey, string> = {
   "Send Data": "Enviar datos",
   Language: "Idioma",
   Theme: "Tema",
-  "Dark Mode (default)": "Modo oscuro (predeterminado)",
+  "Dark Mode": "Modo oscuro",
   "Light Mode": "Modo claro",
-  "Dog Mode": "Modo perro",
+  "Dog Mode (default)": "Modo perro (predeterminado)",
   "Choose how Pawtinerary looks on this device.":
     "Elige el aspecto de Pawtinerary en este dispositivo.",
   "A calm, focused workspace for low light.":
@@ -459,9 +459,9 @@ const ca: Record<TranslationKey, string> = {
   "Send Data": "Enviar dades",
   Language: "Llengua",
   Theme: "Tema",
-  "Dark Mode (default)": "Mode fosc (predeterminat)",
+  "Dark Mode": "Mode fosc",
   "Light Mode": "Mode clar",
-  "Dog Mode": "Mode gos",
+  "Dog Mode (default)": "Mode gos (predeterminat)",
   "Choose how Pawtinerary looks on this device.":
     "Tria l'aspecte de Pawtinerary en aquest dispositiu.",
   "A calm, focused workspace for low light.":

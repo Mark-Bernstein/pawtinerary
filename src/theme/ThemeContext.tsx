@@ -12,9 +12,9 @@ const STORAGE_KEY = "pawtinerary.theme.v1";
 const readTheme = (): Theme => {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
-    return saved === "light" || saved === "dog" ? saved : "dark";
+    return saved === "dark" || saved === "light" ? saved : "dog";
   } catch {
-    return "dark";
+    return "dog";
   }
 };
 
