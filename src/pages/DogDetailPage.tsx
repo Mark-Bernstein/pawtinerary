@@ -15,6 +15,7 @@ import { useApp } from "../context/AppContext";
 import { useLanguage } from "../i18n/LanguageContext";
 import type { Service } from "../types";
 import { todayKey } from "../utils/dates";
+import { getTotals } from "../utils/earnings";
 import {
   Badge,
   Button,
@@ -31,6 +32,7 @@ import {
   TopRow,
 } from "../styles";
 import { EmptyState } from "../components/EmptyState";
+import { EarningsCard } from "../components/EarningsCard";
 import { Modal } from "../components/Modal";
 import { ServiceCard } from "../components/ServiceCard";
 
@@ -156,10 +158,8 @@ export const DogDetailPage = ({
             </AddressButton>
           </div>
           <div>
-            <Label>{t("Hourly rate")}</Label>
-            <strong>
-              {money(dog.hourlyRate)} / {t("hour")}
-            </strong>
+            <Label>{t("Rate")}</Label>
+            <strong>{money(dog.rate)} / {t("session")}</strong>
           </div>
           <div>
             <Label>{t("Owner / client")}</Label>
@@ -205,6 +205,29 @@ export const DogDetailPage = ({
           </div>
         </InfoCard>
       </Grid>
+      <Stack $gap={15} style={{ marginBottom: 30 }}>
+        <SectionTitle>
+          {t("Earnings for {dog}", { dog: dog.name })}
+        </SectionTitle>
+        <Grid>
+          <EarningsCard
+            title={t("Today")}
+            totals={getTotals(services, [dog], "day", new Date())}
+          />
+          <EarningsCard
+            title={t("This Week")}
+            totals={getTotals(services, [dog], "week", new Date())}
+          />
+          <EarningsCard
+            title={t("This Month")}
+            totals={getTotals(services, [dog], "month", new Date())}
+          />
+          <EarningsCard
+            title={t("Lifetime")}
+            totals={getTotals(services, [dog])}
+          />
+        </Grid>
+      </Stack>
       <Stack $gap={25}>
         <ServiceSection>
           <Row style={{ justifyContent: "space-between" }}>

@@ -1,4 +1,5 @@
 import {
+  AlignmentType,
   Document,
   HeadingLevel,
   Packer,
@@ -11,7 +12,9 @@ import {
 } from "docx";
 import type { ReportData } from "./report";
 import { reportPeriodLabel, reportServices } from "./report";
+import { getTotals, serviceAmount } from "./earnings";
 import {
+  formatCurrency,
   formatGroup,
   formatLocalizedDate,
   formatLocalizedShortDay,
@@ -34,15 +37,26 @@ export const reportDocx = async (report: ReportData) => {
   ) => translate(report.language, key, params);
   const items = reportServices(report);
   const dogMap = new Map(report.dogs.map((dog) => [dog.id, dog]));
+  const totals = getTotals(items, report.dogs);
+  const money = (amount: number) => formatCurrency(amount, report.language);
   const rows = [
     new TableRow({
-      children: [t("Date"), t("Group"), t("Dog / Client"), t("Status")].map(
-        (value) => cell(value, true),
-      ),
+      children: [
+        t("Date"),
+        t("Group"),
+        t("Dog / Client"),
+        t("Status"),
+        t("Rate"),
+        t("Amount"),
+      ].map((value) => cell(value, true)),
     }),
   ];
   items.forEach((item) => {
     const dog = dogMap.get(item.dogId)!;
+    const rate =
+      item.status === "completed"
+        ? (item.completedRate ?? dog.rate)
+        : dog.rate;
     rows.push(
       new TableRow({
         children: [
@@ -50,6 +64,10 @@ export const reportDocx = async (report: ReportData) => {
           formatGroup(item.group, report.language),
           `${dog.name}${dog.ownerName ? ` / ${dog.ownerName}` : ""}`,
           formatStatus(item.status, report.language),
+          money(rate),
+          item.status === "cancelled"
+            ? money(0)
+            : money(serviceAmount(item, dog)),
         ].map((value) => cell(value)),
       }),
     );
@@ -87,6 +105,23 @@ export const reportDocx = async (report: ReportData) => {
                 }),
               ]
             : [new Paragraph({ text: t("No services in this period.") })]),
+          new Paragraph({
+            text: t("Earned: {amount}", { amount: money(totals.earned) }),
+            alignment: AlignmentType.RIGHT,
+            spacing: { before: 300 },
+          }),
+          new Paragraph({
+            text: t("Potential: {amount}", {
+              amount: money(totals.potential),
+            }),
+            alignment: AlignmentType.RIGHT,
+          }),
+          new Paragraph({
+            text: t("Combined total: {amount}", {
+              amount: money(totals.earned + totals.potential),
+            }),
+            alignment: AlignmentType.RIGHT,
+          }),
         ],
       },
     ],

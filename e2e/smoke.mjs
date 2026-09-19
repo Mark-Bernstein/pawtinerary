@@ -31,7 +31,7 @@ try {
   );
   assert.equal(
     await page.locator('meta[name="description"]').getAttribute('content'),
-    'Plan dog walks, keep client details organized, and track visits in one calm workspace.',
+    'Plan dog walks, keep client details organized, and track earnings in one calm workspace.',
   );
   await page.getByText('No dogs yet. Create your first dog to get started.').first().waitFor();
   const reloadResponse = await page.reload();
@@ -65,7 +65,7 @@ try {
   await page.getByRole('button', { name: 'Create Dog' }).first().click();
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
   await page.getByText("Enter the dog's name.").waitFor();
-  await page.getByText('Enter an hourly rate in euros.').waitFor();
+  await page.getByText('Enter a rate in euros.').waitFor();
   await page.getByText("Enter the dog's address.").waitFor();
   const dateKeys = await page.evaluate(() => {
     const key = day => `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
@@ -81,16 +81,16 @@ try {
   });
   assert(await page.getByLabel('Dog name *').evaluate(element => document.activeElement === element));
   await page.getByLabel('Dog name *').fill('Bailey');
-  await page.getByLabel('Hourly rate (€) *').fill('twenty');
+  await page.getByLabel('Rate (€) *').fill('twenty');
   await page.getByLabel('Address *').fill('1 Main Street, Dublin');
   await page.getByLabel('Owner / client name').fill('Pat');
   await page.getByLabel('Email').fill('not-an-email');
   await page.getByRole('button', { name: 'Create dog', exact: true }).last().click();
-  await page.getByText('Enter a numeric hourly rate, such as 20 or 20.50.').waitFor();
+  await page.getByText('Enter a numeric rate, such as 20 or 20.50.').waitFor();
   await page.getByText('Enter a valid email address, such as pat@example.com.').waitFor();
-  await page.getByLabel('Hourly rate (€) *').fill('20');
+  await page.getByLabel('Rate (€) *').fill('20');
   await page.getByLabel('Email').fill('pat@example.com');
-  await page.getByText('Enter a numeric hourly rate, such as 20 or 20.50.').waitFor({ state: 'hidden' });
+  await page.getByText('Enter a numeric rate, such as 20 or 20.50.').waitFor({ state: 'hidden' });
   await page.getByText('Enter a valid email address, such as pat@example.com.').waitFor({ state: 'hidden' });
   await page.getByLabel('Entry / access instructions').fill('PRIVATE-CODE-123');
   const dogCalendar = page.getByRole('group', { name: 'Service dates' });
@@ -142,7 +142,7 @@ try {
   if (screenshots) await page.screenshot({ path: '/private/tmp/pawtinerary-service-calendar.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await addService.getByRole('button', { name: 'Add 2 services' }).click();
-  const addedDates = await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')).services.filter(service => service.group === 'Group 2').map(service => service.date).sort());
+  const addedDates = await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v3')).services.filter(service => service.group === 'Group 2').map(service => service.date).sort());
   assert.deepEqual(addedDates, [dateKeys.nextMonthFive, dateKeys.nextMonthSix]);
   await page.getByRole('button', { name: 'Add Service' }).first().click();
   const duplicateAdd = page.getByRole('dialog', { name: 'Add service' });
@@ -152,7 +152,7 @@ try {
   await duplicateCalendar.locator(`button[data-date="${dateKeys.nextMonthFive}"]`).click();
   await duplicateAdd.getByRole('button', { name: 'Add 2 services' }).click();
   await duplicateAdd.getByText(/already has a Group 2 service on .*Remove that date/).waitFor();
-  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')).services.filter(service => service.group === 'Group 2').map(service => service.date).sort()), addedDates);
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v3')).services.filter(service => service.group === 'Group 2').map(service => service.date).sort()), addedDates);
   await duplicateCalendar.locator(`button[data-date="${dateKeys.nextMonthFive}"]`).click();
   await duplicateAdd.getByRole('button', { name: 'Add service', exact: true }).click();
 
@@ -170,7 +170,7 @@ try {
   assert.equal(await page.getByText('€20.00').count() > 0, true);
 
   await page.getByRole('link', { name: 'Edit Info' }).click();
-  await page.getByLabel('Hourly rate (€) *').fill('25');
+  await page.getByLabel('Rate (€) *').fill('25');
   const editDogCalendar = page.getByRole('group', { name: 'Service dates' });
   await page.getByLabel('Group for selected dates').selectOption('Group 3');
   await editDogCalendar.getByRole('button', { name: 'Next month' }).click();
@@ -178,9 +178,9 @@ try {
   await editDogCalendar.locator(`button[data-date="${dateKeys.nextMonthEight}"]`).click();
   await page.getByRole('button', { name: 'Save changes' }).click();
   await page.getByText('€25.00').first().waitFor();
-  assert.equal(await page.getByText('€20.00').count(), 0);
+  assert.equal(await page.getByText('€20.00').count() > 0, true);
   assert.deepEqual(
-    await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')).services.filter(service => service.group === 'Group 3').map(service => service.date).sort()),
+    await page.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v3')).services.filter(service => service.group === 'Group 3').map(service => service.date).sort()),
     [dateKeys.today, dateKeys.nextMonthSeven, dateKeys.nextMonthEight].sort(),
   );
   await page.getByRole('button', { name: /1 Main Street, Dublin/ }).click();
@@ -192,7 +192,9 @@ try {
   const reportText = await page.evaluate(() => navigator.clipboard.readText());
   assert(reportText.includes('Bailey'));
   assert(reportText.includes('completed'));
-  assert(!reportText.includes('€'));
+  assert(reportText.includes('Earned: €20.00'));
+  assert(reportText.includes('Potential: €50.00'));
+  assert(reportText.includes('Combined total: €70.00'));
   assert(!reportText.includes('PRIVATE-CODE-123'));
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download DOCX' }).click();
@@ -203,13 +205,21 @@ try {
   assert.equal(bytes.subarray(0, 2).toString(), 'PK');
   const documentXml = execFileSync('unzip', ['-p', await download.path(), 'word/document.xml'], { encoding: 'utf8' });
   assert(documentXml.includes('Bailey'));
-  assert(!documentXml.includes('€'));
+  assert(documentXml.includes('€20.00'));
+  assert(documentXml.includes('€25.00'));
   assert(!documentXml.includes('PRIVATE-CODE-123'));
   await page.getByRole('button', { name: 'Close' }).click();
 
   await page.reload();
   await page.getByText('€25.00').first().waitFor();
-  assert.equal(await page.getByRole('link', { name: 'Earnings' }).count(), 0);
+  await page.getByRole('link', { name: 'Earnings' }).last().click();
+  await page.getByRole('heading', { name: 'Earnings', exact: true }).waitFor();
+  const todayEarnings = page.getByRole('heading', { name: 'Today', exact: true }).locator('..');
+  await todayEarnings.getByText('€20.00').waitFor();
+  await todayEarnings.getByText('€50.00').waitFor();
+  await page.setViewportSize({ width: 320, height: 700 });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Open calculator' }).click();
   for (const key of ['2', '0', '+', '5', '=']) await page.getByRole('button', { name: key, exact: true }).click();
   await page.getByText('25', { exact: true }).waitFor();
@@ -290,6 +300,7 @@ try {
     await legacyPage.evaluate(() => {
       const today = new Date();
       const key = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      localStorage.removeItem('pawtinerary.data.v3');
       localStorage.removeItem('pawtinerary.data.v2');
       localStorage.setItem('pawtinerary.data.v1', JSON.stringify({
         version: 1,
@@ -307,14 +318,18 @@ try {
     await legacyPage.goto(new URL('/dogs/legacy-dog', base).toString());
     await legacyPage.getByText('Scheduled services').waitFor();
     assert(await legacyPage.getByText('€20.00').count() > 0);
+    assert(await legacyPage.getByText('€9.00').count() > 0);
     assert.equal(await legacyPage.getByText('€18.00').count(), 0);
-    await legacyPage.waitForFunction(() => localStorage.getItem('pawtinerary.data.v2') !== null);
-    const migrated = await legacyPage.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v2')));
-    assert.equal(migrated.version, 2);
+    await legacyPage.waitForFunction(() => localStorage.getItem('pawtinerary.data.v3') !== null);
+    const migrated = await legacyPage.evaluate(() => JSON.parse(localStorage.getItem('pawtinerary.data.v3')));
+    assert.equal(migrated.version, 3);
     assert.equal(migrated.dogs.length, 2);
+    assert.equal(migrated.dogs[0].rate, 20);
+    assert(migrated.dogs.every(dog => !('hourlyRate' in dog)));
     assert.equal(migrated.services.length, 3);
     assert(migrated.services.every(service => !('durationMinutes' in service)));
     assert(migrated.services.every(service => !('completedHourlyRate' in service)));
+    assert.equal(migrated.services.find(service => service.id === 'short').completedRate, 9);
     await legacyPage.reload();
     await legacyPage.getByText('Completed history').waitFor();
     await legacyPage.goto(base);

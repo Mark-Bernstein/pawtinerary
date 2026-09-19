@@ -65,7 +65,7 @@ const emptyInput: DogInput = {
   ownerEmail: "",
   notes: "",
   accessInstructions: "",
-  hourlyRate: 0,
+  rate: 0,
 };
 export const DogFormPage = () => {
   const { id } = useParams();
@@ -83,15 +83,15 @@ export const DogFormPage = () => {
           ownerEmail: dog.ownerEmail,
           notes: dog.notes,
           accessInstructions: dog.accessInstructions,
-          hourlyRate: dog.hourlyRate,
+          rate: dog.rate,
         }
       : emptyInput,
   );
   const [rateText, setRateText] = useState(
     dog
       ? language === "en"
-        ? String(dog.hourlyRate)
-        : String(dog.hourlyRate).replace(".", ",")
+        ? String(dog.rate)
+        : String(dog.rate).replace(".", ",")
       : "",
   );
   const [planned, setPlanned] = useState<PlannedService[]>([]);
@@ -134,7 +134,7 @@ export const DogFormPage = () => {
       ...input,
       name: input.name.trim(),
       address: input.address.trim(),
-      hourlyRate: validation.hourlyRate,
+      rate: validation.rate,
       ownerName: input.ownerName.trim(),
       ownerPhone: input.ownerPhone.trim(),
       ownerEmail: input.ownerEmail.trim(),
@@ -208,7 +208,7 @@ export const DogFormPage = () => {
                   )}
                 </Field>
                 <Field>
-                  {t("Hourly rate (€) *")}
+                  {t("Rate (€) *")}
                   <Input
                     required
                     type="text"
@@ -216,16 +216,16 @@ export const DogFormPage = () => {
                     value={rateText}
                     onChange={(event) => setRateText(event.target.value)}
                     placeholder={language === "en" ? "20.00" : "20,00"}
-                    aria-label={t("Hourly rate (€) *")}
-                    aria-invalid={Boolean(errors.hourlyRate)}
+                    aria-label={t("Rate (€) *")}
+                    aria-invalid={Boolean(errors.rate)}
                     aria-describedby={
-                      errors.hourlyRate ? "dog-rate-error" : undefined
+                      errors.rate ? "dog-rate-error" : undefined
                     }
-                    data-validation-key="hourlyRate"
+                    data-validation-key="rate"
                   />
-                  {errors.hourlyRate && (
+                  {errors.rate && (
                     <FieldError id="dog-rate-error">
-                      {errors.hourlyRate}
+                      {errors.rate}
                     </FieldError>
                   )}
                 </Field>

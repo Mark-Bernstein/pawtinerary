@@ -10,7 +10,7 @@ const dog: DogInput = {
   ownerEmail: "",
   notes: "",
   accessInstructions: "",
-  hourlyRate: 20,
+  rate: 20,
 };
 const planned = (
   key: string,
@@ -26,24 +26,24 @@ describe("dog form validation", () => {
     const result = validateDogForm({ ...dog, name: " ", address: " " }, "", []);
     expect(result.errors).toMatchObject({
       name: "Enter the dog's name.",
-      hourlyRate: "Enter an hourly rate in euros.",
+      rate: "Enter a rate in euros.",
       address: "Enter the dog's address.",
     });
   });
 
   it("explains invalid rates and accepts a decimal comma", () => {
-    expect(validateDogForm(dog, "twenty", []).errors.hourlyRate).toContain(
+    expect(validateDogForm(dog, "twenty", []).errors.rate).toContain(
       "numeric",
     );
-    expect(validateDogForm(dog, "0", []).errors.hourlyRate).toContain(
+    expect(validateDogForm(dog, "0", []).errors.rate).toContain(
       "greater than €0",
     );
-    expect(validateDogForm(dog, "20.999", []).errors.hourlyRate).toContain(
+    expect(validateDogForm(dog, "20.999", []).errors.rate).toContain(
       "two decimal places",
     );
     const result = validateDogForm(dog, "20,50", []);
     expect(result.errors).toEqual({});
-    expect(result.hourlyRate).toBe(20.5);
+    expect(result.rate).toBe(20.5);
   });
 
   it("points to an invalid optional email", () => {

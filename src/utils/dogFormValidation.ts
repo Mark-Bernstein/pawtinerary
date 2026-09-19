@@ -20,19 +20,19 @@ export const validateDogForm = (
   if (!input.name.trim())
     errors.name = translate(language, "Enter the dog's name.");
   if (!normalizedRate)
-    errors.hourlyRate = translate(language, "Enter an hourly rate in euros.");
+    errors.rate = translate(language, "Enter a rate in euros.");
   else if (!Number.isFinite(numericRate))
-    errors.hourlyRate = translate(
+    errors.rate = translate(
       language,
-      "Enter a numeric hourly rate, such as 20 or 20.50.",
+      "Enter a numeric rate, such as 20 or 20.50.",
     );
   else if (numericRate <= 0)
-    errors.hourlyRate = translate(
+    errors.rate = translate(
       language,
-      "The hourly rate must be greater than €0.",
+      "The rate must be greater than €0.",
     );
   else if (!/^(?:\d+(?:\.\d{0,2})?|\.\d{1,2})$/.test(normalizedRate))
-    errors.hourlyRate = translate(
+    errors.rate = translate(
       language,
       "Use digits and no more than two decimal places.",
     );
@@ -87,5 +87,5 @@ export const validateDogForm = (
     }
   }
 
-  return { errors, hourlyRate: numericRate };
+  return { errors, rate: numericRate };
 };

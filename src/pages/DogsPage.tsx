@@ -133,9 +133,9 @@ export const DogsPage = () => {
                     }}
                   >
                     <div>
-                      <Muted>{t("Hourly rate")}</Muted>
+                      <Muted>{t("Rate")}</Muted>
                       <div style={{ fontWeight: 800 }}>
-                        {money(dog.hourlyRate)}
+                        {money(dog.rate)}
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
