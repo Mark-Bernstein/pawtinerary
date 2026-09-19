@@ -159,7 +159,9 @@ export const DogDetailPage = ({
           </div>
           <div>
             <Label>{t("Rate")}</Label>
-            <strong>{money(dog.rate)} / {t("session")}</strong>
+            <strong>
+              {money(dog.rate)} / {t("session")}
+            </strong>
           </div>
           <div>
             <Label>{t("Owner / client")}</Label>

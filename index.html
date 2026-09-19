@@ -7,18 +7,32 @@
     <script>
       try {
         const savedTheme = localStorage.getItem("pawtinerary.theme.v1");
-        const theme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : "dog";
+        const theme =
+          savedTheme === "dark" || savedTheme === "light" ? savedTheme : "dog";
         document.documentElement.dataset.theme = theme;
         document.querySelector('meta[name="theme-color"]').content =
-          theme === "light" ? "#f7f6f1" : theme === "dog" ? "#fff3d8" : "#111b18";
+          theme === "light"
+            ? "#f7f6f1"
+            : theme === "dog"
+              ? "#fff3d8"
+              : "#111b18";
       } catch {
         document.documentElement.dataset.theme = "dog";
       }
     </script>
     <style>
-      html { background: #fff3d8; color-scheme: light; }
-      html[data-theme="light"] { background: #f7f6f1; color-scheme: light; }
-      html[data-theme="dog"] { background: #fff3d8; color-scheme: light; }
+      html {
+        background: #fff3d8;
+        color-scheme: light;
+      }
+      html[data-theme="light"] {
+        background: #f7f6f1;
+        color-scheme: light;
+      }
+      html[data-theme="dog"] {
+        background: #fff3d8;
+        color-scheme: light;
+      }
     </style>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta

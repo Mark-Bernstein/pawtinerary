@@ -113,9 +113,7 @@ export const reportText = (report: ReportData) => {
   items.forEach((item) => {
     const dog = dogMap.get(item.dogId)!;
     const rate =
-      item.status === "completed"
-        ? (item.completedRate ?? dog.rate)
-        : dog.rate;
+      item.status === "completed" ? (item.completedRate ?? dog.rate) : dog.rate;
     lines.push(
       `${formatLocalizedShortDay(item.date, report.language)} | ${formatGroup(item.group, report.language)} | ${dog.name}${dog.ownerName ? ` (${dog.ownerName})` : ""} | ${formatStatus(item.status, report.language)} | ${money(rate)} | ${item.status === "cancelled" ? money(0) : money(serviceAmount(item, dog))}`,
     );

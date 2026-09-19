@@ -50,9 +50,7 @@ describe("stored data", () => {
     const data = parseData(
       JSON.stringify({
         version: 2,
-        dogs: [
-          { id: "d", name: "Dog", address: "Street", hourlyRate: 20 },
-        ],
+        dogs: [{ id: "d", name: "Dog", address: "Street", hourlyRate: 20 }],
         services: [
           {
             id: "completed",
@@ -74,9 +72,7 @@ describe("stored data", () => {
     const data = parseData(
       JSON.stringify({
         version: 1,
-        dogs: [
-          { id: "d", name: "Dog", address: "Street", hourlyRate: 20 },
-        ],
+        dogs: [{ id: "d", name: "Dog", address: "Street", hourlyRate: 20 }],
         services: [
           {
             id: "completed",

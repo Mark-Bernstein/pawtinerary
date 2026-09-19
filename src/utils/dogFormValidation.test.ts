@@ -32,9 +32,7 @@ describe("dog form validation", () => {
   });
 
   it("explains invalid rates and accepts a decimal comma", () => {
-    expect(validateDogForm(dog, "twenty", []).errors.rate).toContain(
-      "numeric",
-    );
+    expect(validateDogForm(dog, "twenty", []).errors.rate).toContain("numeric");
     expect(validateDogForm(dog, "0", []).errors.rate).toContain(
       "greater than €0",
     );

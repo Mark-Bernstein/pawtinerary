@@ -54,9 +54,7 @@ export const reportDocx = async (report: ReportData) => {
   items.forEach((item) => {
     const dog = dogMap.get(item.dogId)!;
     const rate =
-      item.status === "completed"
-        ? (item.completedRate ?? dog.rate)
-        : dog.rate;
+      item.status === "completed" ? (item.completedRate ?? dog.rate) : dog.rate;
     rows.push(
       new TableRow({
         children: [

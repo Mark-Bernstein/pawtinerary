@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { Dog, Service } from "../types";
 import { reportFileName, reportText } from "../utils/report";
-import { formatCurrency, formatLocalizedDate, translate } from "./LanguageContext";
+import {
+  formatCurrency,
+  formatLocalizedDate,
+  translate,
+} from "./LanguageContext";
 
 describe("language support", () => {
   it("translates labels and interpolated messages", () => {
@@ -15,7 +19,9 @@ describe("language support", () => {
 
   it("uses local dates and Euro formatting", () => {
     const date = new Date(2026, 8, 17, 12);
-    expect(formatLocalizedDate(date, "MMMM yyyy", "es")).toBe("septiembre 2026");
+    expect(formatLocalizedDate(date, "MMMM yyyy", "es")).toBe(
+      "septiembre 2026",
+    );
     expect(formatLocalizedDate(date, "MMMM yyyy", "ca")).toBe("setembre 2026");
     expect(formatCurrency(20.5, "es")).toMatch(/20,50.*€/);
   });

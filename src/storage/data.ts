@@ -40,7 +40,8 @@ const validStoredService = (value: unknown) => {
     format(parsedDate, "yyyy-MM-dd") === service.date &&
     ["Group 1", "Group 2", "Group 3"].includes(String(service.group)) &&
     ["scheduled", "completed", "cancelled"].includes(String(service.status)) &&
-    (service.completedRate === undefined || positiveNumber(service.completedRate))
+    (service.completedRate === undefined ||
+      positiveNumber(service.completedRate))
   );
 };
 const cents = (amount: number) =>
@@ -59,27 +60,25 @@ export const parseData = (raw: string | null): PawtineraryData => {
     )
       return emptyData();
 
-    const dogs: Dog[] = data.dogs
-      .filter(validStoredDog)
-      .map((value) => {
-        const dog = value as Record<string, unknown>;
-        return {
-          id: dog.id as string,
-          name: dog.name as string,
-          address: dog.address as string,
-          ownerName: typeof dog.ownerName === "string" ? dog.ownerName : "",
-          ownerPhone: typeof dog.ownerPhone === "string" ? dog.ownerPhone : "",
-          ownerEmail: typeof dog.ownerEmail === "string" ? dog.ownerEmail : "",
-          notes: typeof dog.notes === "string" ? dog.notes : "",
-          accessInstructions:
-            typeof dog.accessInstructions === "string"
-              ? dog.accessInstructions
-              : "",
-          rate: storedDogRate(dog)!,
-          createdAt: typeof dog.createdAt === "string" ? dog.createdAt : "",
-          updatedAt: typeof dog.updatedAt === "string" ? dog.updatedAt : "",
-        };
-      });
+    const dogs: Dog[] = data.dogs.filter(validStoredDog).map((value) => {
+      const dog = value as Record<string, unknown>;
+      return {
+        id: dog.id as string,
+        name: dog.name as string,
+        address: dog.address as string,
+        ownerName: typeof dog.ownerName === "string" ? dog.ownerName : "",
+        ownerPhone: typeof dog.ownerPhone === "string" ? dog.ownerPhone : "",
+        ownerEmail: typeof dog.ownerEmail === "string" ? dog.ownerEmail : "",
+        notes: typeof dog.notes === "string" ? dog.notes : "",
+        accessInstructions:
+          typeof dog.accessInstructions === "string"
+            ? dog.accessInstructions
+            : "",
+        rate: storedDogRate(dog)!,
+        createdAt: typeof dog.createdAt === "string" ? dog.createdAt : "",
+        updatedAt: typeof dog.updatedAt === "string" ? dog.updatedAt : "",
+      };
+    });
     const dogMap = new Map(dogs.map((dog) => [dog.id, dog]));
     const version = data.version;
     const services: Service[] = data.services

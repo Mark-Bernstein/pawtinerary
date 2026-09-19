@@ -215,7 +215,7 @@ export const DogFormPage = () => {
                     inputMode="decimal"
                     value={rateText}
                     onChange={(event) => setRateText(event.target.value)}
-                    placeholder={language === "en" ? "20.00" : "20,00"}
+                    placeholder="50"
                     aria-label={t("Rate (€) *")}
                     aria-invalid={Boolean(errors.rate)}
                     aria-describedby={
@@ -224,9 +224,7 @@ export const DogFormPage = () => {
                     data-validation-key="rate"
                   />
                   {errors.rate && (
-                    <FieldError id="dog-rate-error">
-                      {errors.rate}
-                    </FieldError>
+                    <FieldError id="dog-rate-error">{errors.rate}</FieldError>
                   )}
                 </Field>
               </Grid>

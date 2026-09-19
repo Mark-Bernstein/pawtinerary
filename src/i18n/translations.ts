@@ -376,7 +376,8 @@ const es: Record<TranslationKey, string> = {
     "Elige un grupo y toca las fechas para añadir o quitar servicios.",
   "Group for selected dates": "Grupo de las fechas seleccionadas",
   "Service dates": "Fechas de servicio",
-  "Tap dates to add or remove them.": "Toca las fechas para añadirlas o quitarlas.",
+  "Tap dates to add or remove them.":
+    "Toca las fechas para añadirlas o quitarlas.",
   "{count} date selected": "{count} fecha seleccionada",
   "{count} dates selected": "{count} fechas seleccionadas",
   "Remove {date}": "Quitar {date}",
@@ -636,7 +637,8 @@ const ca: Record<TranslationKey, string> = {
     "Tria un grup i toca les dates per afegir o treure serveis.",
   "Group for selected dates": "Grup de les dates seleccionades",
   "Service dates": "Dates de servei",
-  "Tap dates to add or remove them.": "Toca les dates per afegir-les o treure-les.",
+  "Tap dates to add or remove them.":
+    "Toca les dates per afegir-les o treure-les.",
   "{count} date selected": "{count} data seleccionada",
   "{count} dates selected": "{count} dates seleccionades",
   "Remove {date}": "Treure {date}",

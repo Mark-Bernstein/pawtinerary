@@ -27,10 +27,7 @@ export const validateDogForm = (
       "Enter a numeric rate, such as 20 or 20.50.",
     );
   else if (numericRate <= 0)
-    errors.rate = translate(
-      language,
-      "The rate must be greater than €0.",
-    );
+    errors.rate = translate(language, "The rate must be greater than €0.");
   else if (!/^(?:\d+(?:\.\d{0,2})?|\.\d{1,2})$/.test(normalizedRate))
     errors.rate = translate(
       language,
