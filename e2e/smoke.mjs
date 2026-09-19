@@ -307,6 +307,8 @@ try {
 
   await page.getByRole("link", { name: "Schedule" }).last().click();
   await page.getByText("Group 1").first().waitFor();
+  await page.getByRole("list", { name: "Group 1: Dogs to visit" }).waitFor();
+  await page.getByRole("list", { name: "Group 3: Dogs to visit" }).waitFor();
   assert.deepEqual(
     await page
       .getByRole("list", { name: "Group 1: Dogs to visit" })
@@ -373,6 +375,38 @@ try {
   await page.getByText("Address copied!").waitFor();
 
   await page.getByRole("button", { name: "Send Data" }).click();
+  const sendDataDialog = page.getByRole("dialog", { name: "Send Data" });
+  await sendDataDialog
+    .getByText(
+      "The snapshot includes private notes and access instructions. Store it somewhere secure.",
+    )
+    .waitFor();
+  await sendDataDialog
+    .getByText(
+      "Uploading a snapshot will replace all current dogs, services, and earnings. This cannot be undone.",
+    )
+    .waitFor();
+  const snapshotDownloadPromise = page.waitForEvent("download");
+  await sendDataDialog
+    .getByRole("button", { name: "Save snapshot of data" })
+    .click();
+  const snapshotDownload = await snapshotDownloadPromise;
+  assert.match(
+    snapshotDownload.suggestedFilename(),
+    /^Pawtinerary-Snapshot-\d{4}-\d{2}-\d{2}\.json$/,
+  );
+  const snapshotPath = await snapshotDownload.path();
+  const snapshotJson = JSON.parse(await readFile(snapshotPath, "utf8"));
+  assert.equal(snapshotJson.format, "pawtinerary-backup");
+  assert.equal(snapshotJson.snapshotVersion, 1);
+  assert.equal(snapshotJson.data.version, 3);
+  assert.equal(snapshotJson.data.dogs[0].name, "Bailey");
+  assert.equal(
+    snapshotJson.data.dogs[0].accessInstructions,
+    "PRIVATE-CODE-123",
+  );
+  assert.equal(snapshotJson.data.dogs[0].rate, 25);
+  assert(snapshotJson.data.services.length > 0);
   await page.getByLabel("Report period").selectOption("day");
   await page.getByRole("button", { name: "Copy Report Text" }).click();
   const reportText = await page.evaluate(() => navigator.clipboard.readText());
@@ -458,6 +492,61 @@ try {
     .getByText("No dogs yet. Create your first dog to get started.")
     .waitFor();
 
+  await page.getByRole("button", { name: "Send Data" }).click();
+  const restoreDialog = page.getByRole("dialog", { name: "Send Data" });
+  const snapshotInput = restoreDialog.getByLabel("Choose snapshot file");
+  await snapshotInput.setInputFiles({
+    name: "damaged.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("{bad"),
+  });
+  await restoreDialog
+    .getByText("That snapshot file is invalid or damaged.")
+    .waitFor();
+  assert.equal(
+    await restoreDialog
+      .getByRole("button", { name: "Replace current data" })
+      .isDisabled(),
+    true,
+  );
+  await snapshotInput.setInputFiles(snapshotPath);
+  await restoreDialog
+    .getByText(
+      `${snapshotJson.data.dogs.length} dogs and ${snapshotJson.data.services.length} services ready to restore.`,
+    )
+    .waitFor();
+  await page.setViewportSize({ width: 320, height: 700 });
+  assert(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth + 1,
+    ),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await restoreDialog
+    .getByRole("button", { name: "Replace current data" })
+    .click();
+  await page.getByText("Data restored from snapshot").waitFor();
+  await page.getByText("Bailey").first().waitFor();
+  const restoredData = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("pawtinerary.data.v3")),
+  );
+  assert.equal(restoredData.dogs[0].accessInstructions, "PRIVATE-CODE-123");
+  assert.equal(restoredData.dogs[0].rate, 25);
+  assert.equal(restoredData.services.length, snapshotJson.data.services.length);
+
+  await page.getByText("Bailey").first().click();
+  await page.getByRole("button", { name: "Delete Dog" }).click();
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await page
+    .getByText(
+      "Are you sure? Deleting this dog will remove all associated services.",
+    )
+    .waitFor();
+  await page.getByRole("button", { name: "Delete Dog" }).last().click();
+  await page
+    .getByText("No dogs yet. Create your first dog to get started.")
+    .waitFor();
+
   await page.setViewportSize({ width: 1280, height: 850 });
   assert(
     await page.evaluate(
@@ -496,6 +585,7 @@ try {
   await page.getByLabel("Nom del gos *").waitFor();
   await page.getByRole("link", { name: "Agenda" }).first().click();
   await page.getByRole("button", { name: "Enviar dades" }).click();
+  await page.getByRole("heading", { name: "Carregar dades" }).waitFor();
   await page
     .getByRole("button", { name: "Copiar el text de l'informe" })
     .click();

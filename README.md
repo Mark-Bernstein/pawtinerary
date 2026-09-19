@@ -36,7 +36,7 @@ React, TypeScript, Vite, styled-components, React Router, date-fns, docx, and Vi
 - `src/i18n`: English, Spanish, and Catalan wording, locale formatting, and language preference.
 - `src/theme`: Dark, Light, and Dog Mode selection and persistence.
 - `src/storage/data.ts`: versioned browser storage parsing and writing.
-- `src/utils`: date, form validation, and report logic.
+- `src/utils`: date, form validation, report, and snapshot logic.
 
 ## Data and scheduling
 
@@ -48,12 +48,18 @@ Each service belongs to one dog, date, and group, and can be scheduled, complete
 
 Send Data creates a DOCX file in the browser for a selected day, week, month, or lifetime. It also offers plain text copy and file sharing when the device supports the Web Share API. Reports use the currently selected language and include dogs, client names when available, service dates, groups, statuses, rates, amounts, and earnings totals. Entry and access instructions are never included. No email is sent by the app.
 
+## Data snapshots
+
+Send Data can also download a complete JSON snapshot of the browser's Pawtinerary data. The snapshot contains every dog and service, including completed earnings, notes, and private access instructions, so store the file somewhere secure. Its dated filename makes it practical to keep several recovery points.
+
+Use Upload Data in the same dialog to select a previously saved snapshot. Pawtinerary validates the file before enabling the restore button. Restoring replaces all current dogs, services, and earnings with the snapshot contents and cannot be undone, so save a newer snapshot first if the current records may still be needed.
+
 ## Sharing the app
 
 Share `https://pawtinerary.vercel.app/` to show a branded link preview. Static Open Graph and large-image card metadata live in `index.html`; the banner is `public/social-preview.png`. The preview contains no browser-stored dog or client data.
 
 ## MVP limits and backend migration
 
-**Everything is stored locally in this browser. Clearing browser data removes all Pawtinerary records.** Data does not sync between devices, and there is no backup or login. Browser storage can also be disabled or exhausted.
+**Everything is stored locally in this browser. Clearing browser data removes all Pawtinerary records.** Data does not sync between devices, and there is no automatic cloud backup or login. Downloaded snapshots can be restored manually. Browser storage can also be disabled or exhausted.
 
 For a future backend, keep the Dog and Service contracts, replace the storage adapter behind the app context with API calls, add account ownership and server validation, and plan a one-time import from the versioned local data. Add server-side backups before relying on it across devices.

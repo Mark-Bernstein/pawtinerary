@@ -152,6 +152,7 @@ export const englishKeys = [
   "Clear",
   "Backspace",
   "Error",
+  "Service report",
   "Create a report locally, then download, copy, or share it.",
   "Report period",
   "Select day",
@@ -172,6 +173,16 @@ export const englishKeys = [
   "Combined total: {amount}",
   "Service report · {period}",
   "Generated {date}",
+  "Save snapshot",
+  "Download a complete backup of all dogs, services, earnings, notes, and access instructions.",
+  "The snapshot includes private notes and access instructions. Store it somewhere secure.",
+  "Save snapshot of data",
+  "Upload Data",
+  "Restore a previously saved Pawtinerary snapshot.",
+  "Uploading a snapshot will replace all current dogs, services, and earnings. This cannot be undone.",
+  "Choose snapshot file",
+  "{dogs} dogs and {services} services ready to restore.",
+  "Replace current data",
   "Browser storage is unavailable. Changes may not survive a refresh.",
   "Dog created",
   "Dog updated",
@@ -192,6 +203,12 @@ export const englishKeys = [
   "Report shared",
   "File sharing is unavailable. Download or copy the report instead.",
   "Could not share the report. Download or copy it instead.",
+  "Snapshot downloaded",
+  "Could not save the snapshot. Please try again.",
+  "Data restored from snapshot",
+  "That snapshot file is invalid or damaged.",
+  "This snapshot was created by an unsupported version of Pawtinerary.",
+  "Snapshot files must be 10 MB or smaller.",
   "Enter the dog's name.",
   "Enter a rate in euros.",
   "Enter a numeric rate, such as 20 or 20.50.",
@@ -403,6 +420,7 @@ const es: Record<TranslationKey, string> = {
   Clear: "Borrar",
   Backspace: "Retroceso",
   Error: "Error",
+  "Service report": "Informe de servicios",
   "Create a report locally, then download, copy, or share it.":
     "Crea un informe en este dispositivo para descargarlo, copiarlo o compartirlo.",
   "Report period": "Período del informe",
@@ -425,6 +443,21 @@ const es: Record<TranslationKey, string> = {
   "Combined total: {amount}": "Total combinado: {amount}",
   "Service report · {period}": "Informe de servicios · {period}",
   "Generated {date}": "Generado el {date}",
+  "Save snapshot": "Guardar copia",
+  "Download a complete backup of all dogs, services, earnings, notes, and access instructions.":
+    "Descarga una copia completa de todos los perros, servicios, ingresos, notas e instrucciones de acceso.",
+  "The snapshot includes private notes and access instructions. Store it somewhere secure.":
+    "La copia incluye notas privadas e instrucciones de acceso. Guárdala en un lugar seguro.",
+  "Save snapshot of data": "Guardar copia de los datos",
+  "Upload Data": "Cargar datos",
+  "Restore a previously saved Pawtinerary snapshot.":
+    "Restaura una copia de Pawtinerary guardada anteriormente.",
+  "Uploading a snapshot will replace all current dogs, services, and earnings. This cannot be undone.":
+    "Al cargar una copia se reemplazarán todos los perros, servicios e ingresos actuales. Esta acción no se puede deshacer.",
+  "Choose snapshot file": "Elegir archivo de copia",
+  "{dogs} dogs and {services} services ready to restore.":
+    "{dogs} perros y {services} servicios listos para restaurar.",
+  "Replace current data": "Reemplazar los datos actuales",
   "Browser storage is unavailable. Changes may not survive a refresh.":
     "El almacenamiento del navegador no está disponible. Los cambios podrían perderse al recargar.",
   "Dog created": "Perro creado",
@@ -452,6 +485,16 @@ const es: Record<TranslationKey, string> = {
     "No se pueden compartir archivos aquí. Descarga o copia el informe.",
   "Could not share the report. Download or copy it instead.":
     "No se pudo compartir el informe. Descárgalo o cópialo.",
+  "Snapshot downloaded": "Copia descargada",
+  "Could not save the snapshot. Please try again.":
+    "No se pudo guardar la copia. Inténtalo de nuevo.",
+  "Data restored from snapshot": "Datos restaurados desde la copia",
+  "That snapshot file is invalid or damaged.":
+    "El archivo de copia no es válido o está dañado.",
+  "This snapshot was created by an unsupported version of Pawtinerary.":
+    "Esta copia se creó con una versión no compatible de Pawtinerary.",
+  "Snapshot files must be 10 MB or smaller.":
+    "Los archivos de copia deben tener un tamaño máximo de 10 MB.",
   "Enter the dog's name.": "Introduce el nombre del perro.",
   "Enter a rate in euros.": "Introduce una tarifa en euros.",
   "Enter a numeric rate, such as 20 or 20.50.":
@@ -664,6 +707,7 @@ const ca: Record<TranslationKey, string> = {
   Clear: "Esborrar",
   Backspace: "Retrocés",
   Error: "Error",
+  "Service report": "Informe de serveis",
   "Create a report locally, then download, copy, or share it.":
     "Crea un informe en aquest dispositiu per baixar-lo, copiar-lo o compartir-lo.",
   "Report period": "Període de l'informe",
@@ -686,6 +730,21 @@ const ca: Record<TranslationKey, string> = {
   "Combined total: {amount}": "Total combinat: {amount}",
   "Service report · {period}": "Informe de serveis · {period}",
   "Generated {date}": "Generat el {date}",
+  "Save snapshot": "Desar una còpia",
+  "Download a complete backup of all dogs, services, earnings, notes, and access instructions.":
+    "Baixa una còpia completa de tots els gossos, serveis, ingressos, notes i instruccions d'accés.",
+  "The snapshot includes private notes and access instructions. Store it somewhere secure.":
+    "La còpia inclou notes privades i instruccions d'accés. Desa-la en un lloc segur.",
+  "Save snapshot of data": "Desar una còpia de les dades",
+  "Upload Data": "Carregar dades",
+  "Restore a previously saved Pawtinerary snapshot.":
+    "Restaura una còpia de Pawtinerary desada anteriorment.",
+  "Uploading a snapshot will replace all current dogs, services, and earnings. This cannot be undone.":
+    "En carregar una còpia se substituiran tots els gossos, serveis i ingressos actuals. Aquesta acció no es pot desfer.",
+  "Choose snapshot file": "Triar el fitxer de còpia",
+  "{dogs} dogs and {services} services ready to restore.":
+    "{dogs} gossos i {services} serveis preparats per restaurar.",
+  "Replace current data": "Substituir les dades actuals",
   "Browser storage is unavailable. Changes may not survive a refresh.":
     "L'emmagatzematge del navegador no està disponible. Els canvis es podrien perdre en recarregar.",
   "Dog created": "Gos creat",
@@ -713,6 +772,16 @@ const ca: Record<TranslationKey, string> = {
     "No es poden compartir fitxers aquí. Baixa o copia l'informe.",
   "Could not share the report. Download or copy it instead.":
     "No s'ha pogut compartir l'informe. Baixa'l o copia'l.",
+  "Snapshot downloaded": "Còpia baixada",
+  "Could not save the snapshot. Please try again.":
+    "No s'ha pogut desar la còpia. Torna-ho a provar.",
+  "Data restored from snapshot": "Dades restaurades des de la còpia",
+  "That snapshot file is invalid or damaged.":
+    "El fitxer de còpia no és vàlid o està malmès.",
+  "This snapshot was created by an unsupported version of Pawtinerary.":
+    "Aquesta còpia es va crear amb una versió de Pawtinerary no compatible.",
+  "Snapshot files must be 10 MB or smaller.":
+    "Els fitxers de còpia han de tenir una mida màxima de 10 MB.",
   "Enter the dog's name.": "Introdueix el nom del gos.",
   "Enter a rate in euros.": "Introdueix una tarifa en euros.",
   "Enter a numeric rate, such as 20 or 20.50.":

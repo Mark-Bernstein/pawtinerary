@@ -30,6 +30,7 @@ interface AppActions {
   addServices: (inputs: ServiceInput[]) => boolean;
   updateService: (id: string, input: ServiceInput) => boolean;
   setServiceStatus: (id: string, status: ServiceStatus) => void;
+  restoreData: (snapshot: PawtineraryData) => boolean;
   notify: (message: TranslationKey) => void;
   toast: string;
 }
@@ -201,6 +202,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
               ? "Service cancelled"
               : "Service restored",
         );
+      },
+      restoreData: (snapshot) => {
+        if (!writeData(snapshot)) {
+          notify(
+            "Browser storage is unavailable. Changes may not survive a refresh.",
+          );
+          return false;
+        }
+        setData(snapshot);
+        notify("Data restored from snapshot");
+        return true;
       },
     }),
     [data, toast, t],
